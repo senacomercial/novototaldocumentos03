@@ -5,8 +5,9 @@ import {defineConfig, loadEnv} from 'vite';
 
 export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
+  const isGitHub = process.env.GITHUB_ACTIONS === 'true';
   return {
-    base: process.env.CI ? '/novototaldocumentos03/' : '/',
+    base: isGitHub ? '/novototaldocumentos03/' : '/',
     plugins: [react(), tailwindcss()],
     define: {
       'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),

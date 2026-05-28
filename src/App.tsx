@@ -76,8 +76,11 @@ const AppContent: React.FC = () => {
 };
 
 const App: React.FC = () => {
+  const isGitHub = window.location.hostname.includes('github.io');
+  const basename = isGitHub ? '/novototaldocumentos03/' : '/';
+
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <AppContent />
     </BrowserRouter>
   );

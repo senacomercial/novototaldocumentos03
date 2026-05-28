@@ -1,0 +1,73 @@
+import { supabase } from './supabase';
+import type { Pedido, Status, Categoria } from '../types';
+
+interface PedidoRow {
+  id: string;
+  user_id: string;
+  protocolo: string;
+  categoria: string;
+  categoria_name: string;
+  titulo: string;
+  status: string;
+  data_pedido: string;
+  prazo_estimado: string | null;
+  progress: number;
+  valor: number;
+  certificado: boolean;
+  arquivo_url: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+function rowToPedido(row: PedidoRow): Pedido {
+  return {
+    id: row.id,
+    protocolo: row.protocolo,
+    categoria: row.categoria as Categoria,
+    categoriaName: row.categoria_name,
+    titulo: row.titulo,
+    status: row.status as Status,
+    dataPedido: new Date(row.data_pedido).toLocaleDateString('pt-BR', {
+      day: '2-digit', month: 'short', year: 'numeric',
+    }),
+    prazoEstimado: row.prazo_estimado
+      ? new Date(row.prazo_estimado).toLocaleDateString('pt-BR', {
+          day: '2-digit', month: 'short', year: 'numeric',
+        })
+      : '—',
+    progress: row.progress,
+    valor: Number(row.valor),
+    certificado: row.certificado,
+  };
+}
+
+export async function fetchPedidos(userId: string): Promise<Pedido[]> {
+  const { data, error } = await supabase
+    .from('pedidos')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return ((data as PedidoRow[]) ?? []).map(rowToPedido);
+}
+
+export async function createPedido(
+  userId: string,
+  params: { categoria: Categoria; categoriaName: string; titulo: string; valor: number; prazoEstimado?: string }
+): Promise<Pedido> {
+  const { data, error } = await supabase
+    .from('pedidos')
+    .insert({
+      user_id: userId,
+      protocolo: '',
+      categoria: params.categoria,
+      categoria_name: params.categoriaName,
+      titulo: params.titulo,
+      valor: params.valor,
+      prazo_estimado: params.prazoEstimado ?? null,
+    })
+    .select()
+    .single();
+  if (error) throw error;
+  return rowToPedido(data as PedidoRow);
+}

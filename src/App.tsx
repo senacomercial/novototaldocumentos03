@@ -7,6 +7,9 @@ import { Landing } from './pages/Landing';
 import { Dashboard } from './pages/Dashboard';
 import { Consultar } from './pages/Consultar';
 import { Obrigado } from './pages/Obrigado';
+import { Login } from './pages/Login';
+import { Cadastro } from './pages/Cadastro';
+import { supabase } from './lib/supabase';
 
 const DEFAULT_TWEAKS: Tweaks = {
   headline: 'Registre suas obras com segurança',
@@ -25,22 +28,46 @@ const AppContent: React.FC = () => {
   const [tweaks] = useState<Tweaks>(DEFAULT_TWEAKS);
 
   useEffect(() => {
-    const path = window.location.pathname;
-    setCurrentRoute(path);
+    setCurrentRoute(window.location.pathname);
+
+    supabase.auth.getSession().then(({ data }) => {
+      setLoggedIn(!!data.session);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setLoggedIn(!!session);
+      setCurrentRoute(window.location.pathname);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
+
+  function handleLogin() {
+    setLoggedIn(true);
+  }
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    setLoggedIn(false);
+    navigate('/');
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <Header route={currentRoute} navigate={navigate} loggedIn={loggedIn} />
+      <Header
+        route={currentRoute}
+        navigate={navigate}
+        loggedIn={loggedIn}
+        onLogout={handleLogout}
+      />
 
       <Routes>
         <Route path="/" element={<Landing navigate={navigate} tweaks={tweaks} />} />
         <Route path="/dashboard" element={<Dashboard navigate={navigate} />} />
         <Route path="/consultar" element={<Consultar navigate={navigate} />} />
         <Route path="/obrigado" element={<Obrigado navigate={navigate} />} />
-        {/* Placeholder routes for future pages */}
-        <Route path="/login" element={<div className="container" style={{ paddingTop: '48px' }}>Login Page (Coming Soon)</div>} />
-        <Route path="/cadastro" element={<div className="container" style={{ paddingTop: '48px' }}>Cadastro Page (Coming Soon)</div>} />
+        <Route path="/login" element={<Login navigate={navigate} onLogin={handleLogin} />} />
+        <Route path="/cadastro" element={<Cadastro navigate={navigate} onLogin={handleLogin} />} />
       </Routes>
 
       <Footer navigate={navigate} />

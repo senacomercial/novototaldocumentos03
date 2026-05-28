@@ -4,9 +4,10 @@ interface HeaderProps {
   route: string;
   navigate: (path: string) => void;
   loggedIn: boolean;
+  onLogout?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ route, navigate, loggedIn }) => {
+export const Header: React.FC<HeaderProps> = ({ route, navigate, loggedIn, onLogout }) => {
   return (
     <header className="header">
       <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '64px' }}>
@@ -38,13 +39,24 @@ export const Header: React.FC<HeaderProps> = ({ route, navigate, loggedIn }) => 
             </button>
           )}
           {loggedIn && (
-            <button
-              className="btn-secondary"
-              onClick={() => navigate('/dashboard')}
-              style={{ height: '40px', paddingRight: '16px', paddingLeft: '16px' }}
-            >
-              Minha Área
-            </button>
+            <>
+              <button
+                className="btn-secondary"
+                onClick={() => navigate('/dashboard')}
+                style={{ height: '40px', paddingRight: '16px', paddingLeft: '16px' }}
+              >
+                Minha Área
+              </button>
+              {onLogout && (
+                <button
+                  className="btn-secondary"
+                  onClick={onLogout}
+                  style={{ height: '40px', paddingRight: '16px', paddingLeft: '16px', opacity: 0.7 }}
+                >
+                  Sair
+                </button>
+              )}
+            </>
           )}
         </nav>
       </div>

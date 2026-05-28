@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Pedido, Status } from '../types';
-import { MOCK_PEDIDOS } from '../lib/data';
+import { fetchPedidos } from '../lib/pedidos';
+import { supabase } from '../lib/supabase';
 
 interface DashboardProps {
   navigate: (path: string) => void;
@@ -37,28 +38,29 @@ const PedidoCard: React.FC<PedidoCardProps> = ({ pedido, onViewDetails }) => {
   const statusColor = getStatusColor(pedido.status);
 
   return (
-    <div style={{
-      background: 'var(--bg-card)',
-      border: '1px solid var(--border)',
-      borderRadius: 'var(--r-md)',
-      padding: 'var(--pad-card)',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '16px',
-      cursor: 'pointer',
-      transition: 'all 200ms ease-out',
-    }}
-    onMouseEnter={(e) => {
-      (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-accent)';
-      (e.currentTarget as HTMLElement).style.background = 'var(--bg-card-hi)';
-      (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)';
-    }}
-    onMouseLeave={(e) => {
-      (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)';
-      (e.currentTarget as HTMLElement).style.background = 'var(--bg-card)';
-      (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
-    }}
-    onClick={onViewDetails}
+    <div
+      style={{
+        background: 'var(--bg-card)',
+        border: '1px solid var(--border)',
+        borderRadius: 'var(--r-md)',
+        padding: 'var(--pad-card)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '16px',
+        cursor: 'pointer',
+        transition: 'all 200ms ease-out',
+      }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-accent)';
+        (e.currentTarget as HTMLElement).style.background = 'var(--bg-card-hi)';
+        (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)';
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)';
+        (e.currentTarget as HTMLElement).style.background = 'var(--bg-card)';
+        (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
+      }}
+      onClick={onViewDetails}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
         <div>
@@ -134,6 +136,55 @@ const PedidoCard: React.FC<PedidoCardProps> = ({ pedido, onViewDetails }) => {
 };
 
 export const Dashboard: React.FC<DashboardProps> = ({ navigate }) => {
+  const [pedidos, setPedidos] = useState<Pedido[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      const uid = data.session?.user.id ?? null;
+      setUserId(uid);
+      if (uid) {
+        fetchPedidos(uid)
+          .then(setPedidos)
+          .catch((err) => setError(err.message))
+          .finally(() => setLoading(false));
+      } else {
+        setLoading(false);
+      }
+    });
+  }, []);
+
+  if (!loading && !userId) {
+    return (
+      <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 16px' }}>
+        <div style={{
+          background: 'var(--bg-card)',
+          border: '1px solid var(--border)',
+          borderRadius: 'var(--r-md)',
+          padding: '48px',
+          textAlign: 'center',
+          maxWidth: '400px',
+        }}>
+          <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔒</div>
+          <h3 style={{ margin: '0 0 8px', fontSize: '18px' }}>Acesso restrito</h3>
+          <p style={{ margin: '0 0 24px', color: 'var(--fg-muted)', fontSize: '14px' }}>
+            Faça login para acessar sua área de registros.
+          </p>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+            <button className="btn btn-secondary" style={{ height: '40px' }} onClick={() => navigate('/cadastro')}>
+              Criar conta
+            </button>
+            <button className="btn btn-primary" style={{ height: '40px' }} onClick={() => navigate('/login')}>
+              Entrar
+            </button>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main style={{ flex: 1 }}>
       <section style={{ paddingTop: 'var(--pad-section)', paddingBottom: 'var(--pad-section)' }}>
@@ -156,13 +207,33 @@ export const Dashboard: React.FC<DashboardProps> = ({ navigate }) => {
             </button>
           </div>
 
-          {MOCK_PEDIDOS.length > 0 ? (
+          {loading && (
+            <div style={{ textAlign: 'center', padding: '48px', color: 'var(--fg-muted)' }}>
+              Carregando seus registros…
+            </div>
+          )}
+
+          {error && (
+            <div style={{
+              background: 'rgba(239,68,68,0.1)',
+              border: '1px solid #ef4444',
+              borderRadius: 'var(--r-sm)',
+              padding: '16px',
+              color: '#ef4444',
+              fontSize: '14px',
+              marginBottom: '24px',
+            }}>
+              Erro ao carregar pedidos: {error}
+            </div>
+          )}
+
+          {!loading && pedidos.length > 0 && (
             <div style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
               gap: 'var(--gap-grid)',
             }}>
-              {MOCK_PEDIDOS.map((pedido) => (
+              {pedidos.map((pedido) => (
                 <PedidoCard
                   key={pedido.id}
                   pedido={pedido}
@@ -170,7 +241,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ navigate }) => {
                 />
               ))}
             </div>
-          ) : (
+          )}
+
+          {!loading && pedidos.length === 0 && userId && !error && (
             <div style={{
               background: 'var(--bg-card)',
               border: '1px solid var(--border)',

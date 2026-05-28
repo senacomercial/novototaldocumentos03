@@ -1,0 +1,200 @@
+// Shared components for Totalis prototype
+// Exported to window at bottom.
+
+const { useState, useEffect, useRef } = React;
+
+// ─── Logo (inline SVG so it inherits color + accent var) ───
+function LogoWordmark({ size = 28 }) {
+  return (
+    <svg viewBox="0 0 720 200" fill="none" style={{ height: size, width: 'auto' }} aria-label="Totalis">
+      <defs>
+        <linearGradient id={`tw-grad-${size}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="var(--accent-soft)" />
+          <stop offset="100%" stopColor="var(--accent-deep)" />
+        </linearGradient>
+      </defs>
+      <g transform="translate(20, 20)">
+        <path d="M 10 0 L 10 18 M 10 0 L 60 0 L 60 12 L 130 12 L 130 100 Q 130 140 70 165 Q 10 140 10 100 L 10 30"
+              stroke={`url(#tw-grad-${size})`} strokeWidth="9" strokeLinecap="square" strokeLinejoin="miter" fill="none" />
+        <g stroke={`url(#tw-grad-${size})`} strokeWidth="9" strokeLinecap="square" fill="none">
+          <line x1="40" y1="34" x2="100" y2="34" />
+          <line x1="70" y1="34" x2="70" y2="130" />
+        </g>
+      </g>
+      <line x1="195" y1="30" x2="195" y2="175" stroke={`url(#tw-grad-${size})`} strokeWidth="2.5" />
+      <g strokeWidth="9" strokeLinecap="square" fill="none" stroke="currentColor">
+        <line x1="225" y1="70" x2="295" y2="70" />
+        <line x1="260" y1="70" x2="260" y2="155" />
+        <rect x="315" y="70" width="60" height="85" />
+        <line x1="395" y1="70" x2="465" y2="70" />
+        <line x1="430" y1="70" x2="430" y2="155" />
+      </g>
+      <g strokeWidth="9" strokeLinecap="square" fill="none" stroke={`url(#tw-grad-${size})`}>
+        <line x1="485" y1="155" x2="520" y2="70" />
+        <line x1="520" y1="70" x2="555" y2="155" />
+        <line x1="498" y1="125" x2="542" y2="125" />
+      </g>
+      <g strokeWidth="9" strokeLinecap="square" fill="none" stroke="currentColor">
+        <line x1="575" y1="70" x2="575" y2="155" />
+        <line x1="575" y1="155" x2="635" y2="155" />
+        <line x1="655" y1="70" x2="655" y2="155" />
+        <path d="M 715 78 Q 675 70 675 95 Q 675 115 705 118 Q 735 122 735 142 Q 735 160 685 152" />
+      </g>
+    </svg>
+  );
+}
+
+function LogoMark({ size = 36 }) {
+  return (
+    <svg viewBox="0 0 160 200" fill="none" style={{ height: size, width: 'auto' }} aria-label="Totalis mark">
+      <defs>
+        <linearGradient id={`tm-grad-${size}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="var(--accent-soft)" />
+          <stop offset="100%" stopColor="var(--accent-deep)" />
+        </linearGradient>
+      </defs>
+      <g transform="translate(15, 15)">
+        <path d="M 10 0 L 10 18 M 10 0 L 60 0 L 60 12 L 130 12 L 130 100 Q 130 140 70 168 Q 10 140 10 100 L 10 30"
+              stroke={`url(#tm-grad-${size})`} strokeWidth="9" strokeLinecap="square" strokeLinejoin="miter" fill="none" />
+        <g stroke={`url(#tm-grad-${size})`} strokeWidth="9" strokeLinecap="square" fill="none">
+          <line x1="40" y1="38" x2="100" y2="38" />
+          <line x1="70" y1="38" x2="70" y2="135" />
+        </g>
+      </g>
+    </svg>
+  );
+}
+
+// ─── Icon set (Lucide-style hand-tuned) ───
+const Icon = {
+  Music: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>,
+  Lyrics: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>,
+  Video: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>,
+  Text: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>,
+  Book: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>,
+  Ebook: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>,
+  Contract: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M20 20H8a2 2 0 0 1 0-4h4"/><path d="M4 20V6a2 2 0 0 1 2-2h10l4 4v8"/><path d="M14 4v4h4"/><path d="m8 13 2 2 4-4"/></svg>,
+  Thesis: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 1.66 4 3 6 3s6-1.34 6-3v-5"/></svg>,
+  Course: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/><polygon points="10 8 14 10 10 12 10 8" fill="currentColor"/></svg>,
+  Camera: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>,
+  Art: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><circle cx="13.5" cy="6.5" r="1.5" fill="currentColor"/><circle cx="17.5" cy="10.5" r="1.5" fill="currentColor"/><circle cx="8.5" cy="7.5" r="1.5" fill="currentColor"/><circle cx="6.5" cy="12.5" r="1.5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c3.31 0 6-2.69 6-6 0-4.97-4.5-9-10-9z"/></svg>,
+  Ad: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="m3 11 18-8v18l-18-8z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>,
+  Film: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="2"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg>,
+  Plant: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/><path d="M3 3h18"/></svg>,
+  Project: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M9 2h6l2 3h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3z"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="12" y1="9" x2="12" y2="15"/></svg>,
+  Character: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>,
+  Check: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>,
+  Shield: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2 4 5v6c0 5.5 3.8 10.7 8 12 4.2-1.3 8-6.5 8-12V5z"/><path d="m9 12 2 2 4-4"/></svg>,
+  Chain: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>,
+  Bolt: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
+  Mail: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>,
+  Download: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>,
+  ArrowRight: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>,
+  Search: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>,
+  Plus: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
+  Clock: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
+  User: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+  ChevDown: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>,
+  Sparkle: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg>,
+  LogOut: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>,
+};
+
+// ─── Header / Nav ───
+function Header({ route, navigate, loggedIn }) {
+  return (
+    <header className="nav">
+      <div className="container nav-inner">
+        <div onClick={() => navigate('/')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+          <LogoWordmark size={28} />
+        </div>
+        <nav className="nav-links hide-mobile">
+          <a href="#categorias" onClick={(e) => { if (route !== '/') { e.preventDefault(); navigate('/', 'categorias'); } }}>Categorias</a>
+          <a href="#como-funciona" onClick={(e) => { if (route !== '/') { e.preventDefault(); navigate('/', 'como-funciona'); } }}>Como funciona</a>
+          <a href="#pacotes" onClick={(e) => { if (route !== '/') { e.preventDefault(); navigate('/', 'pacotes'); } }}>Pacotes</a>
+          <a onClick={(e) => { e.preventDefault(); navigate('/consultar'); }} className={route === '/consultar' ? 'active' : ''} style={{ cursor: 'pointer' }}>Consultar protocolo</a>
+        </nav>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          {loggedIn ? (
+            <button className="btn btn-ghost btn-sm" onClick={() => navigate('/dashboard')}>
+              <Icon.User width="16" height="16" /> Meus pedidos
+            </button>
+          ) : (
+            <button className="btn btn-ghost btn-sm hide-mobile" onClick={() => navigate('/login')}>Entrar</button>
+          )}
+          <button className="btn btn-primary btn-sm" onClick={() => navigate('/', 'pacotes')}>Registrar agora</button>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+// ─── Footer ───
+function Footer({ navigate }) {
+  return (
+    <footer className="footer">
+      <div className="container">
+        <div className="footer-grid">
+          <div>
+            <div style={{ marginBottom: 14 }}><LogoWordmark size={26} /></div>
+            <p style={{ color: 'var(--fg-muted)', maxWidth: 320, lineHeight: 1.55, margin: 0 }}>
+              Registro de direitos autorais com certificação digital e prova em blockchain. Uma marca Total Documentos.
+            </p>
+          </div>
+          <div>
+            <h5>Plataforma</h5>
+            <ul>
+              <li><a onClick={(e) => { e.preventDefault(); navigate('/'); }} href="#">Como funciona</a></li>
+              <li><a onClick={(e) => { e.preventDefault(); navigate('/', 'pacotes'); }} href="#">Pacotes</a></li>
+              <li><a onClick={(e) => { e.preventDefault(); navigate('/consultar'); }} href="#">Consultar protocolo</a></li>
+              <li><a onClick={(e) => { e.preventDefault(); navigate('/login'); }} href="#">Acessar conta</a></li>
+            </ul>
+          </div>
+          <div>
+            <h5>Ajuda</h5>
+            <ul>
+              <li><a href="#">Central de ajuda</a></li>
+              <li><a href="#">Falar conosco</a></li>
+              <li><a href="#">WhatsApp</a></li>
+              <li><a href="#">Status do sistema</a></li>
+            </ul>
+          </div>
+          <div>
+            <h5>Legal</h5>
+            <ul>
+              <li><a href="#">Termos de uso</a></li>
+              <li><a href="#">Privacidade</a></li>
+              <li><a href="#">Lei de Direitos Autorais</a></li>
+              <li><a href="#">LGPD</a></li>
+            </ul>
+          </div>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 24, borderTop: '1px solid var(--border)', flexWrap: 'wrap', gap: 12 }}>
+          <div>© 2026 Totalis · Total Documentos · CNPJ 00.000.000/0001-00</div>
+          <div style={{ display: 'flex', gap: 18 }}>
+            <span>Pagamentos via Mercado Pago</span>
+            <span>·</span>
+            <span>Site seguro SSL</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+// ─── Status Pill ───
+const STATUS_META = {
+  RECEBIDO: { label: 'Recebido', kind: 'accent', step: 0 },
+  EM_ANALISE: { label: 'Em análise', kind: 'warning', step: 1 },
+  EM_PROCESSAMENTO: { label: 'Em processamento', kind: 'warning', step: 2 },
+  CONCLUIDO: { label: 'Concluído', kind: 'success', step: 3 },
+  CANCELADO: { label: 'Cancelado', kind: 'default', step: -1 },
+};
+
+function StatusBadge({ status }) {
+  const m = STATUS_META[status] || STATUS_META.RECEBIDO;
+  return <span className={`badge ${m.kind === 'default' ? '' : m.kind}`}>
+    <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'currentColor' }}/> {m.label}
+  </span>;
+}
+
+Object.assign(window, { LogoWordmark, LogoMark, Icon, Header, Footer, StatusBadge, STATUS_META });

@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 200" fill="none">
+  <defs>
+    <linearGradient id="totalisPurple" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c084fc"></stop>
+      <stop offset="100%" stop-color="#7c3aed"></stop>
+    </linearGradient>
+  </defs>
+  
+  <g transform="translate(20, 20)">
+    
+    <path d="M 10 0 L 10 18 M 10 0 L 60 0 L 60 12 L 130 12 L 130 100 Q 130 140 70 165 Q 10 140 10 100 L 10 30" stroke="url(#totalisPurple)" stroke-width="9" stroke-linecap="square" stroke-linejoin="miter" fill="none"></path>
+    
+    <g stroke="url(#totalisPurple)" stroke-width="9" stroke-linecap="square" fill="none">
+      <line x1="40" y1="34" x2="100" y2="34"></line>
+      <line x1="70" y1="34" x2="70" y2="130"></line>
+    </g>
+  </g>
+  
+  <line x1="195" y1="30" x2="195" y2="175" stroke="url(#totalisPurple)" stroke-width="2.5"></line>
+  
+  <g fill="none" stroke-width="9" stroke-linecap="square" stroke-linejoin="miter" font-family="monospace">
+    
+    <g stroke="currentColor">
+      <line x1="225" y1="70" x2="295" y2="70"></line>
+      <line x1="260" y1="70" x2="260" y2="155"></line>
+    </g>
+    
+    <g stroke="currentColor">
+      <rect x="315" y="70" width="60" height="85" rx="0"></rect>
+    </g>
+    
+    <g stroke="currentColor">
+      <line x1="395" y1="70" x2="465" y2="70"></line>
+      <line x1="430" y1="70" x2="430" y2="155"></line>
+    </g>
+    
+    <g stroke="url(#totalisPurple)">
+      <line x1="485" y1="155" x2="520" y2="70"></line>
+      <line x1="520" y1="70" x2="555" y2="155"></line>
+      <line x1="498" y1="125" x2="542" y2="125"></line>
+    </g>
+    
+    <g stroke="currentColor">
+      <line x1="575" y1="70" x2="575" y2="155"></line>
+      <line x1="575" y1="155" x2="635" y2="155"></line>
+    </g>
+    
+    <g stroke="currentColor">
+      <line x1="655" y1="70" x2="655" y2="155"></line>
+    </g>
+    
+    <g stroke="currentColor" fill="none">
+      <path d="M 715 78 Q 675 70 675 95 Q 675 115 705 118 Q 735 122 735 142 Q 735 160 685 152"></path>
+    </g>
+  </g>
+</svg>

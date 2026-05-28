@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { signUp } from '../lib/auth';
 
 interface CadastroProps {
-  navigate: (path: string) => void;
+  navigate: (path: string, section?: string) => void;
   onLogin: () => void;
 }
 

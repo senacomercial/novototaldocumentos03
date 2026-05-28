@@ -4,7 +4,7 @@ import { fetchPedidos } from '../lib/pedidos';
 import { supabase } from '../lib/supabase';
 
 interface DashboardProps {
-  navigate: (path: string) => void;
+  navigate: (path: string, section?: string) => void;
 }
 
 function getStatusLabel(status: Status): string {

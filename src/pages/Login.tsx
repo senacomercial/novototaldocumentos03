@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { signIn } from '../lib/auth';
 
 interface LoginProps {
-  navigate: (path: string) => void;
+  navigate: (path: string, section?: string) => void;
   onLogin: () => void;
 }
 

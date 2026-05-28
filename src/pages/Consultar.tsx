@@ -3,7 +3,7 @@ import { MOCK_PEDIDOS } from '../lib/data';
 import { Pedido, Status } from '../types';
 
 interface ConsultarProps {
-  navigate: (path: string) => void;
+  navigate: (path: string, section?: string) => void;
 }
 
 function getStatusLabel(status: Status): string {

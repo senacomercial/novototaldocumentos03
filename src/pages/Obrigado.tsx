@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface ObrigadoProps {
-  navigate: (path: string) => void;
+  navigate: (path: string, section?: string) => void;
 }
 
 export const Obrigado: React.FC<ObrigadoProps> = ({ navigate }) => {

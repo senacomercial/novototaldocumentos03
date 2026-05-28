@@ -52,25 +52,34 @@ const AppContent: React.FC = () => {
     navigate('/');
   }
 
+  function handleNavigate(path: string, section?: string) {
+    navigate(path);
+    if (section) {
+      setTimeout(() => {
+        document.getElementById(section)?.scrollIntoView({ behavior: 'smooth' });
+      }, 80);
+    }
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Header
         route={currentRoute}
-        navigate={navigate}
+        navigate={handleNavigate}
         loggedIn={loggedIn}
         onLogout={handleLogout}
       />
 
       <Routes>
-        <Route path="/" element={<Landing navigate={navigate} tweaks={tweaks} />} />
-        <Route path="/dashboard" element={<Dashboard navigate={navigate} />} />
-        <Route path="/consultar" element={<Consultar navigate={navigate} />} />
-        <Route path="/obrigado" element={<Obrigado navigate={navigate} />} />
-        <Route path="/login" element={<Login navigate={navigate} onLogin={handleLogin} />} />
-        <Route path="/cadastro" element={<Cadastro navigate={navigate} onLogin={handleLogin} />} />
+        <Route path="/" element={<Landing navigate={handleNavigate} tweaks={tweaks} />} />
+        <Route path="/dashboard" element={<Dashboard navigate={handleNavigate} />} />
+        <Route path="/consultar" element={<Consultar navigate={handleNavigate} />} />
+        <Route path="/obrigado" element={<Obrigado navigate={handleNavigate} />} />
+        <Route path="/login" element={<Login navigate={handleNavigate} onLogin={handleLogin} />} />
+        <Route path="/cadastro" element={<Cadastro navigate={handleNavigate} onLogin={handleLogin} />} />
       </Routes>
 
-      <Footer navigate={navigate} />
+      <Footer navigate={handleNavigate} />
     </div>
   );
 };

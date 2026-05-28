@@ -1,64 +1,63 @@
 import React from 'react';
+import { LogoWordmark, Icons } from './Icons';
 
 interface HeaderProps {
   route: string;
-  navigate: (path: string) => void;
+  navigate: (path: string, section?: string) => void;
   loggedIn: boolean;
   onLogout?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({ route, navigate, loggedIn, onLogout }) => {
-  return (
-    <header className="header">
-      <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '64px' }}>
-        <button
-          className="logo-btn"
-          onClick={() => navigate('/')}
-          style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
-        >
-          <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M20 2L35 8V20L20 32L5 20V8L20 2Z" fill="url(#grad)" stroke="var(--accent)" strokeWidth="1.5"/>
-            <defs>
-              <linearGradient id="grad" x1="20" y1="2" x2="20" y2="32" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stopColor="var(--accent-soft)"/>
-                <stop offset="100%" stopColor="var(--accent-deep)"/>
-              </linearGradient>
-            </defs>
-          </svg>
-          <span style={{ fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em' }}>Totalis</span>
-        </button>
+  const scrollTo = (id: string) => {
+    if (route !== '/') {
+      navigate('/', id);
+    } else {
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
-        <nav style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
-          {!loggedIn && route !== '/login' && (
-            <button
-              className="btn-secondary"
-              onClick={() => navigate('/login')}
-              style={{ height: '40px', paddingRight: '16px', paddingLeft: '16px' }}
-            >
-              Entrar
-            </button>
-          )}
-          {loggedIn && (
+  return (
+    <header className="nav">
+      <div className="container nav-inner">
+        <div onClick={() => navigate('/')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+          <LogoWordmark size={28} />
+        </div>
+
+        <nav className="nav-links hide-mobile">
+          <a href="#categorias" onClick={(e) => { e.preventDefault(); scrollTo('categorias'); }}>Categorias</a>
+          <a href="#como-funciona" onClick={(e) => { e.preventDefault(); scrollTo('como-funciona'); }}>Como funciona</a>
+          <a href="#pacotes" onClick={(e) => { e.preventDefault(); scrollTo('pacotes'); }}>Pacotes</a>
+          <a
+            href="#"
+            onClick={(e) => { e.preventDefault(); navigate('/consultar'); }}
+            className={route === '/consultar' ? 'active' : ''}
+          >
+            Consultar protocolo
+          </a>
+        </nav>
+
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          {loggedIn ? (
             <>
-              <button
-                className="btn-secondary"
-                onClick={() => navigate('/dashboard')}
-                style={{ height: '40px', paddingRight: '16px', paddingLeft: '16px' }}
-              >
-                Minha Área
+              <button className="btn btn-ghost btn-sm" onClick={() => navigate('/dashboard')}>
+                <Icons.User width={16} height={16} /> Meus pedidos
               </button>
               {onLogout && (
-                <button
-                  className="btn-secondary"
-                  onClick={onLogout}
-                  style={{ height: '40px', paddingRight: '16px', paddingLeft: '16px', opacity: 0.7 }}
-                >
-                  Sair
+                <button className="btn btn-ghost btn-sm" onClick={onLogout} style={{ opacity: 0.7 }}>
+                  <Icons.LogOut width={16} height={16} />
                 </button>
               )}
             </>
+          ) : (
+            <button className="btn btn-ghost btn-sm hide-mobile" onClick={() => navigate('/login')}>
+              Entrar
+            </button>
           )}
-        </nav>
+          <button className="btn btn-primary btn-sm" onClick={() => scrollTo('pacotes')}>
+            Registrar agora
+          </button>
+        </div>
       </div>
     </header>
   );

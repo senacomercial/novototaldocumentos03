@@ -1,49 +1,56 @@
 import React from 'react';
+import { LogoWordmark } from './Icons';
 
 interface FooterProps {
-  navigate: (path: string) => void;
+  navigate: (path: string, section?: string) => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({ navigate }) => {
   return (
-    <footer style={{ borderTop: '1px solid var(--border)', marginTop: 'auto', paddingTop: 'var(--pad-section)' }}>
+    <footer className="footer">
       <div className="container">
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '48px',
-          paddingBottom: '48px',
-          marginBottom: '32px',
-          borderBottom: '1px solid var(--border)'
-        }}>
+        <div className="footer-grid">
           <div>
-            <h4 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '12px', color: 'var(--fg-muted)' }}>Produto</h4>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <li><a href="#" style={{ color: 'var(--fg-faint)', fontSize: '14px' }}>Como funciona</a></li>
-              <li><a href="#" style={{ color: 'var(--fg-faint)', fontSize: '14px' }}>Preços</a></li>
-              <li><a href="#" style={{ color: 'var(--fg-faint)', fontSize: '14px' }}>Blog</a></li>
+            <div style={{ marginBottom: 14 }}><LogoWordmark size={26} /></div>
+            <p style={{ color: 'var(--fg-muted)', maxWidth: 320, lineHeight: 1.55, margin: 0 }}>
+              Registro de direitos autorais com certificação digital e prova em blockchain. Uma marca Total Documentos.
+            </p>
+          </div>
+          <div>
+            <h5>Plataforma</h5>
+            <ul>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); navigate('/'); }}>Como funciona</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); navigate('/', 'pacotes'); }}>Pacotes</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); navigate('/consultar'); }}>Consultar protocolo</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); navigate('/login'); }}>Acessar conta</a></li>
             </ul>
           </div>
           <div>
-            <h4 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '12px', color: 'var(--fg-muted)' }}>Empresa</h4>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <li><a href="#" style={{ color: 'var(--fg-faint)', fontSize: '14px' }}>Sobre</a></li>
-              <li><a href="#" style={{ color: 'var(--fg-faint)', fontSize: '14px' }}>Contato</a></li>
-              <li><a href="#" style={{ color: 'var(--fg-faint)', fontSize: '14px' }}>Suporte</a></li>
+            <h5>Ajuda</h5>
+            <ul>
+              <li><a href="#">Central de ajuda</a></li>
+              <li><a href="#">Falar conosco</a></li>
+              <li><a href="#">WhatsApp</a></li>
+              <li><a href="#">Status do sistema</a></li>
             </ul>
           </div>
           <div>
-            <h4 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '12px', color: 'var(--fg-muted)' }}>Legal</h4>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <li><a href="#" style={{ color: 'var(--fg-faint)', fontSize: '14px' }}>Termos de Serviço</a></li>
-              <li><a href="#" style={{ color: 'var(--fg-faint)', fontSize: '14px' }}>Privacidade</a></li>
-              <li><a href="#" style={{ color: 'var(--fg-faint)', fontSize: '14px' }}>Cookies</a></li>
+            <h5>Legal</h5>
+            <ul>
+              <li><a href="#">Termos de uso</a></li>
+              <li><a href="#">Privacidade</a></li>
+              <li><a href="#">Lei de Direitos Autorais</a></li>
+              <li><a href="#">LGPD</a></li>
             </ul>
           </div>
         </div>
-        <div style={{ textAlign: 'center', paddingBottom: '48px', color: 'var(--fg-faint)', fontSize: '13px' }}>
-          <p style={{ margin: 0, marginBottom: '8px' }}>© 2026 Totalis. Todos os direitos reservados.</p>
-          <p style={{ margin: 0 }}>Plataforma de Registro de Direitos Autorais</p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 24, borderTop: '1px solid var(--border)', flexWrap: 'wrap', gap: 12 }}>
+          <div>© 2026 Totalis · Total Documentos · CNPJ 00.000.000/0001-00</div>
+          <div style={{ display: 'flex', gap: 18 }}>
+            <span>Pagamentos via Mercado Pago</span>
+            <span>·</span>
+            <span>Site seguro SSL</span>
+          </div>
         </div>
       </div>
     </footer>

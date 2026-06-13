@@ -95,10 +95,11 @@ serve(async (req) => {
     const pedidosInsert = Array.from({ length: pacote.registros }, () => ({
       user_id:        userId,
       compra_id:      compra.id,
-      categoria:      'MUSICAS',   // padrão; cliente escolhe na área logada
+      categoria:      'MUSICAS' as const,
       categoria_name: 'Músicas',
+      titulo:         'Aguardando envio da obra',
       valor:          valor / pacote.registros,
-      status:         'RECEBIDO',
+      status:         'RECEBIDO' as const,
       progress:       0,
     }));
 
@@ -128,7 +129,7 @@ serve(async (req) => {
         method: 'POST',
         headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          from: 'Totalis <noreply@totaldocumentos.com.br>',
+          from: 'Totalis <onboarding@resend.dev>',
           to: [email],
           subject: `✅ Pedido recebido — Protocolo ${protocolo}`,
           html: emailHtml,

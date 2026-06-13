@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { CATEGORIES, PACOTES, BENEFICIOS, HOW, FAQ_DATA } from '../lib/data';
 import { Icons } from '../components/Icons';
+import { criarCheckout } from '../lib/checkout';
 
 interface LandingProps {
   navigate: (path: string, section?: string) => void;
@@ -9,10 +10,24 @@ interface LandingProps {
 
 export const Landing: React.FC<LandingProps> = ({ navigate, tweaks }) => {
   const [openFaq, setOpenFaq] = useState(0);
+  const [loadingPacote, setLoadingPacote] = useState<string | null>(null);
 
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  async function handleComprar(pacote_id: string) {
+    setLoadingPacote(pacote_id);
+    try {
+      const { checkout_url } = await criarCheckout(pacote_id);
+      window.location.href = checkout_url;
+    } catch {
+      // Se Edge Function não estiver configurada, vai direto para login
+      navigate('/login');
+    } finally {
+      setLoadingPacote(null);
+    }
+  }
 
   return (
     <main style={{ flex: 1 }}>
@@ -220,10 +235,11 @@ export const Landing: React.FC<LandingProps> = ({ navigate, tweaks }) => {
                 </ul>
                 <button
                   className={`btn ${p.featured ? 'btn-primary' : 'btn-ghost'} btn-lg`}
-                  style={{ width: '100%', justifyContent: 'center' }}
-                  onClick={() => navigate('/login')}
+                  style={{ width: '100%', justifyContent: 'center', opacity: loadingPacote === p.id ? 0.7 : 1 }}
+                  disabled={loadingPacote !== null}
+                  onClick={() => handleComprar(p.id)}
                 >
-                  Comprar agora <Icons.ArrowRight width={16} height={16} />
+                  {loadingPacote === p.id ? 'Aguarde…' : <>Comprar agora <Icons.ArrowRight width={16} height={16} /></>}
                 </button>
               </div>
             ))}

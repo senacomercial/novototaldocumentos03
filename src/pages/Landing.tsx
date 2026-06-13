@@ -21,9 +21,9 @@ export const Landing: React.FC<LandingProps> = ({ navigate, tweaks }) => {
     try {
       const { checkout_url } = await criarCheckout(pacote_id);
       window.location.href = checkout_url;
-    } catch {
-      // Se Edge Function não estiver configurada, vai direto para login
-      navigate('/login');
+    } catch (err) {
+      console.error('Erro no checkout:', err);
+      alert('Não foi possível iniciar o pagamento. Tente novamente em alguns instantes.');
     } finally {
       setLoadingPacote(null);
     }

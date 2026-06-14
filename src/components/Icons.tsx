@@ -34,38 +34,16 @@ export const Icons = {
 };
 
 export function LogoWordmark({ size = 28 }: { size?: number }) {
-  const gradId = `logo-grad-${Math.random()}`;
   return (
-    <svg viewBox="0 0 1200 300" fill="none" style={{ height: size, width: 'auto' }} aria-label="Totalis">
-      <defs>
-        <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#c084fc" />
-          <stop offset="100%" stopColor="#a855f7" />
-        </linearGradient>
-      </defs>
-
-      {/* Shield/Escudo */}
-      <g>
-        {/* Outer shield shape */}
-        <path d="M 80 60 L 80 150 Q 80 220 150 250 Q 220 220 220 150 L 220 60 Q 150 40 150 40 Q 80 40 80 60 Z"
-              fill="none" stroke={`url(#${gradId})`} strokeWidth="18" strokeLinejoin="round" />
-
-        {/* Inner T shape */}
-        <line x1="130" y1="70" x2="170" y2="70" stroke={`url(#${gradId})`} strokeWidth="14" strokeLinecap="round" />
-        <line x1="150" y1="70" x2="150" y2="150" stroke={`url(#${gradId})`} strokeWidth="14" strokeLinecap="round" />
-
-        {/* Inner U shape */}
-        <path d="M 120 100 L 120 160 Q 120 180 150 185 Q 180 180 180 160 L 180 100"
-              fill="none" stroke={`url(#${gradId})`} strokeWidth="12" strokeLinecap="round" strokeLinejoin="round" />
-      </g>
-
-      {/* Vertical divider line */}
-      <line x1="280" y1="80" x2="280" y2="220" stroke={`url(#${gradId})`} strokeWidth="8" strokeLinecap="round" />
-
-      {/* TOTALIS Text */}
-      <text x="380" y="180" fontSize="140" fontWeight="700" fontFamily="system-ui, -apple-system, sans-serif" fill="white" letterSpacing="2">
-        TOTALIS
-      </text>
-    </svg>
+    <img
+      src="/logo-totalis.jpg"
+      alt="Totalis"
+      style={{
+        height: size,
+        width: 'auto',
+        mixBlendMode: 'screen',
+        opacity: 0.95,
+      }}
+    />
   );
 }

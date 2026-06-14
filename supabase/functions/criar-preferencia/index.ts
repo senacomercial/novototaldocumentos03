@@ -30,9 +30,6 @@ serve(async (req) => {
     const APP_URL = Deno.env.get('APP_URL') ?? 'https://senacomercial.github.io/novototaldocumentos03';
     const WEBHOOK_URL = Deno.env.get('SUPABASE_URL') + '/functions/v1/webhook-mp';
 
-    console.log('APP_URL:', APP_URL);
-    console.log('WEBHOOK_URL:', WEBHOOK_URL);
-
     const preference = {
       items: [{
         id: pacote_id,
@@ -50,12 +47,9 @@ serve(async (req) => {
         pending: `${APP_URL}/obrigado`,
       },
       auto_return: 'approved',
-      return_url: `${APP_URL}/obrigado`,
       statement_descriptor: 'TOTALIS',
       metadata: { pacote_id, registros: pacote.registros },
     };
-
-    console.log('Preference being sent:', JSON.stringify(preference, null, 2));
 
     const mpRes = await fetch('https://api.mercadopago.com/checkout/preferences', {
       method: 'POST',
@@ -67,7 +61,6 @@ serve(async (req) => {
     });
 
     const mpData = await mpRes.json();
-    console.log('MP Response:', mpData);
     if (!mpRes.ok) return json({ error: mpData.message ?? 'Erro no Mercado Pago' }, 502);
 
     return json({

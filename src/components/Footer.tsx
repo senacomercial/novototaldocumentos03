@@ -11,7 +11,7 @@ export const Footer: React.FC<FooterProps> = ({ navigate }) => {
       <div className="container">
         <div className="footer-grid">
           <div>
-            <div style={{ marginBottom: 14 }}><LogoWordmark size={26} /></div>
+            <div style={{ marginBottom: 14 }}><LogoWordmark size={58} /></div>
             <p style={{ color: 'var(--fg-muted)', maxWidth: 320, lineHeight: 1.55, margin: 0 }}>
               Registro de direitos autorais com certificação digital e prova em blockchain. Uma marca Total Documentos.
             </p>

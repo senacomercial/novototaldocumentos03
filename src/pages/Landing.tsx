@@ -55,7 +55,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, tweaks }) => {
             </div>
             <div className="fade-up" style={{ display: 'flex', gap: 28, marginTop: 44, flexWrap: 'wrap', color: 'var(--fg-faint)', fontSize: 13 }}>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                <Icons.Check width={16} height={16} style={{ color: 'var(--success)' }} /> Em 20 dias úteis
+                <Icons.Check width={16} height={16} style={{ color: 'var(--success)' }} /> Em 24h
               </span>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
                 <Icons.Check width={16} height={16} style={{ color: 'var(--success)' }} /> Lei 9.610/98
@@ -75,7 +75,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, tweaks }) => {
             {[
               { k: '+12.480', l: 'Obras registradas' },
               { k: '16', l: 'Categorias de obra' },
-              { k: '20 dias', l: 'Prazo médio de entrega' },
+              { k: '24h', l: 'Prazo médio de entrega' },
               { k: '180+', l: 'Países pela Conv. de Berna' },
             ].map((s, i) => (
               <div key={i} style={{ padding: '24px 22px', borderLeft: i > 0 ? '1px solid var(--border)' : 'none' }}>
@@ -223,9 +223,8 @@ export const Landing: React.FC<LandingProps> = ({ navigate, tweaks }) => {
                   {[
                     `${p.registros} registro${p.registros > 1 ? 's' : ''} em qualquer categoria`,
                     'Certificado digital + blockchain',
-                    'Entrega em até 20 dias úteis',
+                    'Entrega em 24h',
                     'Acompanhamento por email e dashboard',
-                    'Consulta pública por protocolo',
                   ].map((f, i) => (
                     <li key={i} style={{ display: 'flex', gap: 10, fontSize: 14, color: 'var(--fg-muted)' }}>
                       <Icons.Check width={16} height={16} style={{ color: 'var(--success)', flexShrink: 0, marginTop: 3 }} />

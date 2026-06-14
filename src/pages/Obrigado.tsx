@@ -52,7 +52,7 @@ export const Obrigado: React.FC<ObrigadoProps> = ({ navigate }) => {
               { icon: 'Mail',      text: 'Você receberá um email com seu protocolo único e link de acesso' },
               { icon: 'ArrowRight',text: 'Clique no link do email para entrar direto na sua área (sem senha)' },
               { icon: 'Upload',    text: 'No dashboard, envie o arquivo da obra que quer registrar' },
-              { icon: 'Clock',     text: 'Em até 20 dias úteis seu certificado fica disponível para download' },
+              { icon: 'Clock',     text: 'Em 24h seu certificado fica disponível para download' },
             ].map((step, i) => {
               const IconComp = (Icons as Record<string, React.FC<React.SVGProps<SVGSVGElement>>>)[step.icon] ?? Icons.Check;
               return (

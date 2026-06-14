@@ -20,7 +20,7 @@ export const PACOTES: Pacote[] = [
 export const BENEFICIOS: Beneficio[] = [
   { icon: 'Shield', title: 'Certificado oficial', desc: 'Documento digital com validade jurídica reconhecida.' },
   { icon: 'Chain', title: 'Prova em blockchain', desc: 'Hash da sua obra registrado em rede pública e imutável.' },
-  { icon: 'Bolt', title: 'Em até 20 dias úteis', desc: 'Processo automatizado, sem cartório presencial.' },
+  { icon: 'Bolt', title: 'Em até 24h', desc: 'Processo automatizado, sem cartório presencial.' },
   { icon: 'Clock', title: 'Vale por toda a vida', desc: 'Mais 70 anos após o falecimento do autor (lei 9.610).' },
   { icon: 'Mail', title: 'Acompanhe por email', desc: 'Você recebe atualização a cada etapa do processo.' },
   { icon: 'Download', title: 'Download na hora', desc: 'Baixe seu certificado pela área logada quando estiver pronto.' },
@@ -31,12 +31,12 @@ export const HOW: HowStep[] = [
   { n: '01', title: 'Você escolhe o pacote', desc: 'Selecione quantos registros precisa — 1, 2 ou 3 — e pague com Pix, cartão ou boleto pelo Mercado Pago.' },
   { n: '02', title: 'A gente cria sua conta', desc: 'Assim que o pagamento for confirmado, você recebe um email com seu protocolo e o link de acesso à sua área.' },
   { n: '03', title: 'Você envia sua obra', desc: 'Faça upload do arquivo pela plataforma. A gente cuida da análise, registro e geração do certificado.' },
-  { n: '04', title: 'Certificado em mãos', desc: 'Em até 20 dias úteis seu certificado fica pronto. Download imediato + cópia enviada por email.' },
+  { n: '04', title: 'Certificado em mãos', desc: 'Em até 24h seu certificado fica pronto. Download imediato + cópia enviada por email.' },
 ];
 
 export const FAQ_DATA: FAQ[] = [
   { q: 'Como sei que meu registro tem validade jurídica?', a: 'O certificado emitido pela Totalis é amparado pela Lei de Direitos Autorais nº 9.610/98, que estabelece a proteção da obra desde sua criação. A prova em blockchain reforça com timestamp imutável.' },
-  { q: 'Quanto tempo demora?', a: 'O prazo padrão é de 20 dias úteis a partir da confirmação do pagamento e do envio da sua obra. Você acompanha cada etapa pelo dashboard.' },
+  { q: 'Quanto tempo demora?', a: 'O prazo padrão é de 24h a partir da confirmação do pagamento e do envio da sua obra. Você acompanha cada etapa pelo dashboard.' },
   { q: 'Posso registrar uma obra que já publiquei?', a: 'Sim. O registro pode ser feito a qualquer momento — antes ou depois da publicação. O importante é estabelecer a anterioridade da autoria.' },
   { q: 'Como funciona o pacote com vários registros?', a: 'Você compra de uma vez e usa os créditos quando quiser, sem prazo de expiração. Cada registro pode ser de uma categoria diferente.' },
   { q: 'Quais formas de pagamento vocês aceitam?', a: 'Pix, cartão de crédito (até 12x) e boleto, processados pelo Mercado Pago com toda segurança.' },

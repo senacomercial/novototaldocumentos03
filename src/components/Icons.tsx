@@ -36,7 +36,7 @@ export const Icons = {
 export function LogoWordmark({ size = 28 }: { size?: number }) {
   return (
     <img
-      src="/logo-totalis.jpg"
+      src={`${import.meta.env.BASE_URL}logo-totalis.jpg`}
       alt="Totalis"
       style={{
         height: size,

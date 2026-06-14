@@ -41,8 +41,7 @@ export function LogoWordmark({ size = 28 }: { size?: number }) {
       style={{
         height: size,
         width: 'auto',
-        mixBlendMode: 'screen',
-        opacity: 0.95,
+        mixBlendMode: 'lighten',
       }}
     />
   );

@@ -1,22 +1,14 @@
 import { CategoryInfo, Pacote, Beneficio, HowStep, FAQ, Pedido } from '../types';
 
 export const CATEGORIES: CategoryInfo[] = [
-  { key: 'MUSICAS', name: 'Músicas', desc: 'Composições musicais — instrumentais ou com vocais.', icon: 'Music' },
-  { key: 'LETRAS', name: 'Letras', desc: 'Letras de música, poesia e composição lírica.', icon: 'Lyrics' },
-  { key: 'CLIPES', name: 'Clipes', desc: 'Videoclipes, lyric videos e produções musicais.', icon: 'Video' },
-  { key: 'TEXTOS', name: 'Textos', desc: 'Artigos, crônicas, roteiros e qualquer obra escrita.', icon: 'Text' },
-  { key: 'LIVROS', name: 'Livros', desc: 'Obras literárias completas, ficção ou não-ficção.', icon: 'Book' },
-  { key: 'EBOOKS', name: 'E-books', desc: 'Livros em formato digital prontos para distribuição.', icon: 'Ebook' },
-  { key: 'CONTRATOS', name: 'Contratos', desc: 'Modelos de contrato e documentos comerciais.', icon: 'Contract' },
-  { key: 'TESES', name: 'Teses', desc: 'Dissertações, teses e trabalhos acadêmicos.', icon: 'Thesis' },
-  { key: 'CURSOS', name: 'Cursos', desc: 'Conteúdo educacional, aulas e treinamentos.', icon: 'Course' },
-  { key: 'FOTOGRAFIAS', name: 'Fotografias', desc: 'Fotos autorais, ensaios e portfólios.', icon: 'Camera' },
-  { key: 'ARTES', name: 'Artes', desc: 'Pinturas, ilustrações e arte digital.', icon: 'Art' },
-  { key: 'ANUNCIOS', name: 'Anúncios', desc: 'Campanhas publicitárias e peças de mídia.', icon: 'Ad' },
-  { key: 'VIDEOS', name: 'Vídeos', desc: 'Filmes, documentários e produções audiovisuais.', icon: 'Film' },
-  { key: 'PLANTAS', name: 'Plantas', desc: 'Plantas arquitetônicas e projetos técnicos.', icon: 'Plant' },
-  { key: 'PROJETOS', name: 'Projetos', desc: 'Projetos de design, engenharia e inovação.', icon: 'Project' },
-  { key: 'PERSONAGENS', name: 'Personagens', desc: 'Personagens originais para histórias e jogos.', icon: 'Character' },
+  { key: 'MUSICAS', name: 'Músicas e Letras', desc: 'Composições musicais, letras e obras líricas.', icon: 'Music' },
+  { key: 'VIDEOS', name: 'Vídeos e Clipes', desc: 'Filmes, documentários, clipes e produções audiovisuais.', icon: 'Film' },
+  { key: 'LIVROS', name: 'Livros e E-books', desc: 'Obras literárias e livros digitais.', icon: 'Book' },
+  { key: 'TEXTOS', name: 'Textos e Contratos', desc: 'Artigos, roteiros, crônicas e documentos comerciais.', icon: 'Text' },
+  { key: 'TESES', name: 'Teses e Cursos', desc: 'Dissertações, trabalhos acadêmicos e conteúdo educacional.', icon: 'Thesis' },
+  { key: 'FOTOGRAFIAS', name: 'Fotografias e Artes', desc: 'Fotos, pinturas, ilustrações e arte digital.', icon: 'Camera' },
+  { key: 'ANUNCIOS', name: 'Anúncios e Plantas', desc: 'Campanhas publicitárias, plantas e projetos técnicos.', icon: 'Ad' },
+  { key: 'PROJETOS', name: 'Projetos e Personagens', desc: 'Projetos de design, engenharia e personagens originais.', icon: 'Project' },
 ];
 
 export const PACOTES: Pacote[] = [

@@ -34,41 +34,38 @@ export const Icons = {
 };
 
 export function LogoWordmark({ size = 28 }: { size?: number }) {
+  const gradId = `logo-grad-${Math.random()}`;
   return (
-    <svg viewBox="0 0 720 200" fill="none" style={{ height: size, width: 'auto' }} aria-label="Totalis">
+    <svg viewBox="0 0 1200 300" fill="none" style={{ height: size, width: 'auto' }} aria-label="Totalis">
       <defs>
-        <linearGradient id={`tw-grad-${size}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="var(--accent-soft)" />
-          <stop offset="100%" stopColor="var(--accent-deep)" />
+        <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#c084fc" />
+          <stop offset="100%" stopColor="#a855f7" />
         </linearGradient>
       </defs>
-      <g transform="translate(20, 20)">
-        <path d="M 10 0 L 10 18 M 10 0 L 60 0 L 60 12 L 130 12 L 130 100 Q 130 140 70 165 Q 10 140 10 100 L 10 30"
-              stroke={`url(#tw-grad-${size})`} strokeWidth="9" strokeLinecap="square" strokeLinejoin="miter" fill="none" />
-        <g stroke={`url(#tw-grad-${size})`} strokeWidth="9" strokeLinecap="square" fill="none">
-          <line x1="40" y1="34" x2="100" y2="34" />
-          <line x1="70" y1="34" x2="70" y2="130" />
-        </g>
+
+      {/* Shield/Escudo */}
+      <g>
+        {/* Outer shield shape */}
+        <path d="M 80 60 L 80 150 Q 80 220 150 250 Q 220 220 220 150 L 220 60 Q 150 40 150 40 Q 80 40 80 60 Z"
+              fill="none" stroke={`url(#${gradId})`} strokeWidth="18" strokeLinejoin="round" />
+
+        {/* Inner T shape */}
+        <line x1="130" y1="70" x2="170" y2="70" stroke={`url(#${gradId})`} strokeWidth="14" strokeLinecap="round" />
+        <line x1="150" y1="70" x2="150" y2="150" stroke={`url(#${gradId})`} strokeWidth="14" strokeLinecap="round" />
+
+        {/* Inner U shape */}
+        <path d="M 120 100 L 120 160 Q 120 180 150 185 Q 180 180 180 160 L 180 100"
+              fill="none" stroke={`url(#${gradId})`} strokeWidth="12" strokeLinecap="round" strokeLinejoin="round" />
       </g>
-      <line x1="195" y1="30" x2="195" y2="175" stroke={`url(#tw-grad-${size})`} strokeWidth="2.5" />
-      <g strokeWidth="9" strokeLinecap="square" fill="none" stroke="currentColor">
-        <line x1="225" y1="70" x2="295" y2="70" />
-        <line x1="260" y1="70" x2="260" y2="155" />
-        <rect x="315" y="70" width="60" height="85" />
-        <line x1="395" y1="70" x2="465" y2="70" />
-        <line x1="430" y1="70" x2="430" y2="155" />
-      </g>
-      <g strokeWidth="9" strokeLinecap="square" fill="none" stroke={`url(#tw-grad-${size})`}>
-        <line x1="485" y1="155" x2="520" y2="70" />
-        <line x1="520" y1="70" x2="555" y2="155" />
-        <line x1="498" y1="125" x2="542" y2="125" />
-      </g>
-      <g strokeWidth="9" strokeLinecap="square" fill="none" stroke="currentColor">
-        <line x1="575" y1="70" x2="575" y2="155" />
-        <line x1="575" y1="155" x2="635" y2="155" />
-        <line x1="655" y1="70" x2="655" y2="155" />
-        <path d="M 715 78 Q 675 70 675 95 Q 675 115 705 118 Q 735 122 735 142 Q 735 160 685 152" />
-      </g>
+
+      {/* Vertical divider line */}
+      <line x1="280" y1="80" x2="280" y2="220" stroke={`url(#${gradId})`} strokeWidth="8" strokeLinecap="round" />
+
+      {/* TOTALIS Text */}
+      <text x="380" y="180" fontSize="140" fontWeight="700" fontFamily="system-ui, -apple-system, sans-serif" fill="white" letterSpacing="2">
+        TOTALIS
+      </text>
     </svg>
   );
 }

@@ -24,7 +24,6 @@ export const BENEFICIOS: Beneficio[] = [
   { icon: 'Clock', title: 'Vale por toda a vida', desc: 'Mais 70 anos após o falecimento do autor (lei 9.610).' },
   { icon: 'Mail', title: 'Acompanhe por email', desc: 'Você recebe atualização a cada etapa do processo.' },
   { icon: 'Download', title: 'Download na hora', desc: 'Baixe seu certificado pela área logada quando estiver pronto.' },
-  { icon: 'Search', title: 'Consulta pública', desc: 'Comprovação verificável por qualquer pessoa via protocolo.' },
 ];
 
 export const HOW: HowStep[] = [

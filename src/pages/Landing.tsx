@@ -225,7 +225,6 @@ export const Landing: React.FC<LandingProps> = ({ navigate, tweaks }) => {
                     'Certificado digital + blockchain',
                     'Entrega em 24h',
                     'Acompanhamento por email e dashboard',
-                    'Consulta pública por protocolo',
                   ].map((f, i) => (
                     <li key={i} style={{ display: 'flex', gap: 10, fontSize: 14, color: 'var(--fg-muted)' }}>
                       <Icons.Check width={16} height={16} style={{ color: 'var(--success)', flexShrink: 0, marginTop: 3 }} />

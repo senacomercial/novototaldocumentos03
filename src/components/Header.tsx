@@ -21,7 +21,7 @@ export const Header: React.FC<HeaderProps> = ({ route, navigate, loggedIn, onLog
     <header className="nav">
       <div className="container nav-inner">
         <div onClick={() => navigate('/')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
-          <LogoWordmark size={38} />
+          <LogoWordmark size={58} />
         </div>
 
         <nav className="nav-links hide-mobile">

@@ -43,10 +43,9 @@ serve(async (req) => {
       notification_url: WEBHOOK_URL,
       back_urls: {
         success: `${APP_URL}/obrigado`,
-        failure: `${APP_URL}/#pacotes`,
+        failure: `${APP_URL}/`,
         pending: `${APP_URL}/obrigado`,
       },
-      auto_return: 'approved',
       statement_descriptor: 'TOTALIS',
       metadata: { pacote_id, registros: pacote.registros },
     };

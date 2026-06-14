@@ -7,8 +7,8 @@ export const CATEGORIES: CategoryInfo[] = [
   { key: 'TEXTOS', name: 'Textos e Contratos', desc: 'Artigos, roteiros, crônicas e documentos comerciais.', icon: 'Text' },
   { key: 'TESES', name: 'Teses e Cursos', desc: 'Dissertações, trabalhos acadêmicos e conteúdo educacional.', icon: 'Thesis' },
   { key: 'FOTOGRAFIAS', name: 'Fotografias e Artes', desc: 'Fotos, pinturas, ilustrações e arte digital.', icon: 'Camera' },
-  { key: 'ANUNCIOS', name: 'Anúncios e Plantas', desc: 'Campanhas publicitárias, plantas e projetos técnicos.', icon: 'Ad' },
-  { key: 'PROJETOS', name: 'Projetos e Personagens', desc: 'Projetos de design, engenharia e personagens originais.', icon: 'Project' },
+  { key: 'PLANTAS', name: 'Plantas e Projetos', desc: 'Plantas arquitetônicas, projetos de design e engenharia.', icon: 'Plant' },
+  { key: 'ANUNCIOS', name: 'Anúncios e Personagens', desc: 'Campanhas publicitárias e personagens originais.', icon: 'Ad' },
 ];
 
 export const PACOTES: Pacote[] = [

@@ -28,7 +28,14 @@ const AppContent: React.FC = () => {
   const [tweaks] = useState<Tweaks>(DEFAULT_TWEAKS);
 
   useEffect(() => {
-    setCurrentRoute(window.location.pathname);
+    const params = new URLSearchParams(window.location.search);
+    const redirectPath = params.get('redirect');
+    if (redirectPath) {
+      window.history.replaceState(null, '', redirectPath);
+      setCurrentRoute(redirectPath);
+    } else {
+      setCurrentRoute(window.location.pathname);
+    }
 
     supabase.auth.getSession().then(({ data }) => {
       setLoggedIn(!!data.session);

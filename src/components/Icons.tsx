@@ -36,12 +36,11 @@ export const Icons = {
 export function LogoWordmark({ size = 28 }: { size?: number }) {
   return (
     <img
-      src={`${import.meta.env.BASE_URL}logo-totalis.jpg`}
+      src={`${import.meta.env.BASE_URL}logo-totalis-sem-fundo.png`}
       alt="Totalis"
       style={{
-        height: size,
+        height: size + 5,
         width: 'auto',
-        mixBlendMode: 'lighten',
       }}
     />
   );

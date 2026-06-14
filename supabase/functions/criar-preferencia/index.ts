@@ -46,6 +46,8 @@ serve(async (req) => {
         failure: `${APP_URL}/`,
         pending: `${APP_URL}/obrigado`,
       },
+      auto_return: 'approved',
+      return_url: `${APP_URL}/obrigado`,
       statement_descriptor: 'TOTALIS',
       metadata: { pacote_id, registros: pacote.registros },
     };

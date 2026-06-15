@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { signIn } from '../lib/auth';
+import { criarCheckout } from '../lib/checkout';
 
 interface LoginProps {
   navigate: (path: string, section?: string) => void;
@@ -19,6 +20,13 @@ export const Login: React.FC<LoginProps> = ({ navigate, onLogin }) => {
     try {
       await signIn(email, password);
       onLogin();
+      const pacotePendente = sessionStorage.getItem('pacote_pendente');
+      if (pacotePendente) {
+        sessionStorage.removeItem('pacote_pendente');
+        const { checkout_url } = await criarCheckout(pacotePendente, email);
+        window.location.href = checkout_url;
+        return;
+      }
       navigate('/dashboard');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Erro ao fazer login.');

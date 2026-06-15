@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { signUp } from '../lib/auth';
+import { criarCheckout } from '../lib/checkout';
 
 interface CadastroProps {
   navigate: (path: string, section?: string) => void;
@@ -26,6 +27,13 @@ export const Cadastro: React.FC<CadastroProps> = ({ navigate, onLogin }) => {
       const result = await signUp(email, password, nomeCompleto);
       if (result.session) {
         onLogin();
+        const pacotePendente = sessionStorage.getItem('pacote_pendente');
+        if (pacotePendente) {
+          sessionStorage.removeItem('pacote_pendente');
+          const { checkout_url } = await criarCheckout(pacotePendente, email);
+          window.location.href = checkout_url;
+          return;
+        }
         navigate('/dashboard');
       } else {
         setSuccess(true);
@@ -38,6 +46,7 @@ export const Cadastro: React.FC<CadastroProps> = ({ navigate, onLogin }) => {
   }
 
   if (success) {
+    const hasPendingPackage = !!sessionStorage.getItem('pacote_pendente');
     return (
       <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 16px' }}>
         <div style={{
@@ -54,6 +63,11 @@ export const Cadastro: React.FC<CadastroProps> = ({ navigate, onLogin }) => {
           <p style={{ color: 'var(--fg-muted)', fontSize: '14px', lineHeight: 1.6 }}>
             Enviamos um link de confirmação para <strong>{email}</strong>. Acesse seu e-mail e clique no link para ativar sua conta.
           </p>
+          {hasPendingPackage && (
+            <p style={{ color: 'var(--fg-muted)', fontSize: '13px', lineHeight: 1.6, marginTop: '12px', padding: '12px', background: 'var(--bg-surface)', borderRadius: 'var(--r-sm)' }}>
+              Após confirmar o e-mail, faça login aqui para continuar com o pagamento.
+            </p>
+          )}
           <button
             className="btn btn-secondary"
             onClick={() => navigate('/login')}

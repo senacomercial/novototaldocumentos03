@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { CATEGORIES, PACOTES, BENEFICIOS, HOW, FAQ_DATA } from '../lib/data';
 import { Icons } from '../components/Icons';
 import { criarCheckout } from '../lib/checkout';
+import { supabase } from '../lib/supabase';
 
 interface LandingProps {
   navigate: (path: string, section?: string) => void;
@@ -19,8 +20,16 @@ export const Landing: React.FC<LandingProps> = ({ navigate, tweaks }) => {
   async function handleComprar(pacote_id: string) {
     setLoadingPacote(pacote_id);
     try {
-      const { checkout_url } = await criarCheckout(pacote_id);
-      window.location.href = checkout_url;
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user?.email) {
+        // Já logado → vai direto para o checkout
+        const { checkout_url } = await criarCheckout(pacote_id, session.user.email);
+        window.location.href = checkout_url;
+      } else {
+        // Não logado → salva pacote e redireciona para cadastro
+        sessionStorage.setItem('pacote_pendente', pacote_id);
+        navigate('/cadastro');
+      }
     } catch (err) {
       console.error('Erro no checkout:', err);
       alert('Não foi possível iniciar o pagamento. Tente novamente em alguns instantes.');

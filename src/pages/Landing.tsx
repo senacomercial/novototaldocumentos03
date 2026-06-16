@@ -27,7 +27,7 @@ export const Landing: React.FC<LandingProps> = ({ navigate, tweaks }) => {
         window.location.href = checkout_url;
       } else {
         // Não logado → salva pacote e redireciona para cadastro
-        sessionStorage.setItem('pacote_pendente', pacote_id);
+        localStorage.setItem('pacote_pendente', pacote_id);
         navigate('/cadastro');
       }
     } catch (err) {

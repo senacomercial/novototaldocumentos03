@@ -20,9 +20,9 @@ export const Login: React.FC<LoginProps> = ({ navigate, onLogin }) => {
     try {
       await signIn(email, password);
       onLogin();
-      const pacotePendente = sessionStorage.getItem('pacote_pendente');
+      const pacotePendente = localStorage.getItem('pacote_pendente');
       if (pacotePendente) {
-        sessionStorage.removeItem('pacote_pendente');
+        localStorage.removeItem('pacote_pendente');
         const { checkout_url } = await criarCheckout(pacotePendente, email);
         window.location.href = checkout_url;
         return;

@@ -27,9 +27,9 @@ export const Cadastro: React.FC<CadastroProps> = ({ navigate, onLogin }) => {
       const result = await signUp(email, password, nomeCompleto);
       if (result.session) {
         onLogin();
-        const pacotePendente = sessionStorage.getItem('pacote_pendente');
+        const pacotePendente = localStorage.getItem('pacote_pendente');
         if (pacotePendente) {
-          sessionStorage.removeItem('pacote_pendente');
+          localStorage.removeItem('pacote_pendente');
           const { checkout_url } = await criarCheckout(pacotePendente, email);
           window.location.href = checkout_url;
           return;
@@ -46,7 +46,7 @@ export const Cadastro: React.FC<CadastroProps> = ({ navigate, onLogin }) => {
   }
 
   if (success) {
-    const hasPendingPackage = !!sessionStorage.getItem('pacote_pendente');
+    const hasPendingPackage = !!localStorage.getItem('pacote_pendente');
     return (
       <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 16px' }}>
         <div style={{

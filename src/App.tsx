@@ -34,16 +34,17 @@ const AppContent: React.FC = () => {
     const paymentId = params.get('payment_id') || params.get('collection_id');
 
     if (redirectPath) {
-      const base = window.location.hostname.includes('github.io') ? '/novototaldocumentos03' : '';
-      window.history.replaceState(null, '', base + redirectPath);
+      // Must use React Router's navigate (not window.history.replaceState directly)
+      // so BrowserRouter actually re-renders the matched <Route>, not just the URL bar.
+      navigate(redirectPath, { replace: true });
       setCurrentRoute(redirectPath);
     } else if (paymentId && (paymentStatus === 'approved' || paymentStatus === 'pending')) {
       // MP redirected back after payment — go to dashboard
-      window.history.replaceState(null, '', window.location.pathname);
-      navigate('/dashboard');
+      navigate('/dashboard', { replace: true });
       setCurrentRoute('/dashboard');
     } else {
-      setCurrentRoute(window.location.pathname);
+      const base = window.location.hostname.includes('github.io') ? '/novototaldocumentos03' : '';
+      setCurrentRoute(window.location.pathname.replace(base, '') || '/');
     }
 
     supabase.auth.getSession().then(({ data }) => {
@@ -52,7 +53,8 @@ const AppContent: React.FC = () => {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setLoggedIn(!!session);
-      setCurrentRoute(window.location.pathname);
+      const base = window.location.hostname.includes('github.io') ? '/novototaldocumentos03' : '';
+      setCurrentRoute(window.location.pathname.replace(base, '') || '/');
     });
 
     return () => subscription.unsubscribe();

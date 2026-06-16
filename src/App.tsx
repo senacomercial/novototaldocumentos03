@@ -34,7 +34,8 @@ const AppContent: React.FC = () => {
     const paymentId = params.get('payment_id') || params.get('collection_id');
 
     if (redirectPath) {
-      window.history.replaceState(null, '', redirectPath);
+      const base = window.location.hostname.includes('github.io') ? '/novototaldocumentos03' : '';
+      window.history.replaceState(null, '', base + redirectPath);
       setCurrentRoute(redirectPath);
     } else if (paymentId && (paymentStatus === 'approved' || paymentStatus === 'pending')) {
       // MP redirected back after payment — go to dashboard

@@ -39,7 +39,7 @@ serve(async (req) => {
         currency_id: 'BRL',
       }],
       payer: email ? { email } : undefined,
-      external_reference: pacote_id,
+      external_reference: JSON.stringify({ pacote_id, email: email ?? null }),
       notification_url: WEBHOOK_URL,
       back_urls: {
         success: `${APP_URL}/obrigado`,

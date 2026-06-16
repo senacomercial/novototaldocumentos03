@@ -41,8 +41,16 @@ serve(async (req) => {
       return new Response('pagamento não aprovado', { status: 200 });
     }
 
-    const email         = payment.payer?.email as string;
-    const pacote_id     = (payment.external_reference ?? '1reg') as string;
+    // external_reference pode ser JSON { pacote_id, email } ou string legada
+    let pacote_id = '1reg';
+    let email = payment.payer?.email as string;
+    try {
+      const ref = JSON.parse(payment.external_reference ?? '{}');
+      if (ref.pacote_id) pacote_id = ref.pacote_id;
+      if (ref.email) email = ref.email;
+    } catch {
+      pacote_id = payment.external_reference ?? '1reg';
+    }
     const mp_payment_id = String(payment.id);
     const valor         = payment.transaction_amount as number;
     const pacote        = PACOTES[pacote_id] ?? PACOTES['1reg'];

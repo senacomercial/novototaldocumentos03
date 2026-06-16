@@ -30,9 +30,17 @@ const AppContent: React.FC = () => {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const redirectPath = params.get('redirect');
+    const paymentStatus = params.get('status') || params.get('collection_status');
+    const paymentId = params.get('payment_id') || params.get('collection_id');
+
     if (redirectPath) {
       window.history.replaceState(null, '', redirectPath);
       setCurrentRoute(redirectPath);
+    } else if (paymentId && (paymentStatus === 'approved' || paymentStatus === 'pending')) {
+      // MP redirected back after payment — go to dashboard
+      window.history.replaceState(null, '', window.location.pathname);
+      navigate('/dashboard');
+      setCurrentRoute('/dashboard');
     } else {
       setCurrentRoute(window.location.pathname);
     }

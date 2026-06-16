@@ -4,7 +4,10 @@ export async function signUp(email: string, password: string, nomeCompleto: stri
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { nome_completo: nomeCompleto } },
+    options: {
+      data: { nome_completo: nomeCompleto },
+      emailRedirectTo: `${window.location.origin}${import.meta.env.BASE_URL}login`,
+    },
   });
   if (error) throw error;
   return data;

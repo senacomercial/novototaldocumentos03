@@ -4,8 +4,7 @@
   <meta charset=utf-8>
   <title>Redirecting...</title>
   <script>
-    var path = window.location.pathname.replace(/^\/novototaldocumentos03/, '');
-    window.location.replace('/novototaldocumentos03/?redirect=' + encodeURIComponent(path));
+    window.location.replace('/?redirect=' + encodeURIComponent(window.location.pathname));
   </script>
 </head>
 <body></body>

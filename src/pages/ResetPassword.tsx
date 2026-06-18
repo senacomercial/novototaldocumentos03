@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { resetPasswordForEmail, updatePassword, verifyResetToken } from '../lib/auth';
+import { resetPasswordForEmail, updatePassword } from '../lib/auth';
 import { supabase } from '../lib/supabase';
 
 interface ResetPasswordProps {
@@ -7,23 +7,36 @@ interface ResetPasswordProps {
 }
 
 export const ResetPassword: React.FC<ResetPasswordProps> = ({ navigate }) => {
-  const [step, setStep] = useState<'request' | 'confirm'>('request');
+  const [step, setStep] = useState<'request' | 'confirm' | 'verifying'>('verifying');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
-  const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const urlToken = params.get('token');
+    // O cliente Supabase processa o link de recuperação automaticamente ao carregar
+    // a página (detectSessionInUrl). Quando isso acontece, ele dispara o evento
+    // PASSWORD_RECOVERY — é o sinal correto de que o usuário pode definir nova senha.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        setStep('confirm');
+      }
+    });
 
-    if (urlToken) {
-      setToken(urlToken);
-      setStep('confirm');
-    }
+    supabase.auth.getSession().then(({ data }) => {
+      setStep((current) => (current === 'verifying' && !data.session ? 'request' : current));
+    });
+
+    const timeout = setTimeout(() => {
+      setStep((current) => (current === 'verifying' ? 'request' : current));
+    }, 2500);
+
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timeout);
+    };
   }, []);
 
   async function handleRequestReset(e: React.FormEvent) {
@@ -55,9 +68,6 @@ export const ResetPassword: React.FC<ResetPasswordProps> = ({ navigate }) => {
     }
     setLoading(true);
     try {
-      if (token) {
-        await verifyResetToken(email, token);
-      }
       await updatePassword(password);
       setMessage('✅ Senha redefinida com sucesso! Redirecionando...');
       setTimeout(() => navigate('/dashboard'), 2000);
@@ -66,6 +76,14 @@ export const ResetPassword: React.FC<ResetPasswordProps> = ({ navigate }) => {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (step === 'verifying') {
+    return (
+      <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 16px' }}>
+        <p style={{ color: 'var(--fg-muted)' }}>Verificando link…</p>
+      </main>
+    );
   }
 
   return (
@@ -114,31 +132,6 @@ export const ResetPassword: React.FC<ResetPasswordProps> = ({ navigate }) => {
             </div>
           ) : (
             <>
-              {token && (
-                <div>
-                  <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '6px' }}>
-                    E-mail (para confirmar)
-                  </label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    placeholder="seu@email.com"
-                    style={{
-                      width: '100%',
-                      padding: '10px 14px',
-                      background: 'var(--bg-surface)',
-                      border: '1px solid var(--border)',
-                      borderRadius: 'var(--r-sm)',
-                      color: 'var(--fg)',
-                      fontSize: '14px',
-                      outline: 'none',
-                      boxSizing: 'border-box',
-                    }}
-                  />
-                </div>
-              )}
               <div>
                 <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '6px' }}>
                   Nova Senha

@@ -46,11 +46,7 @@ export async function resetPasswordForEmail(email: string) {
   if (error) throw error;
 }
 
-export async function verifyResetToken(email: string, token: string) {
-  const { error } = await supabase.auth.verifyOtp({
-    email,
-    token,
-    type: 'recovery',
-  });
+export async function updatePassword(password: string) {
+  const { error } = await supabase.auth.updateUser({ password });
   if (error) throw error;
 }

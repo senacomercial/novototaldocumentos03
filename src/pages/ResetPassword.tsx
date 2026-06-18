@@ -16,10 +16,11 @@ export const ResetPassword: React.FC<ResetPasswordProps> = ({ navigate }) => {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('type') === 'recovery') {
-      setStep('confirm');
-    }
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) {
+        setStep('confirm');
+      }
+    });
   }, []);
 
   async function handleRequestReset(e: React.FormEvent) {

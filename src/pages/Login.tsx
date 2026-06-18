@@ -111,6 +111,14 @@ export const Login: React.FC<LoginProps> = ({ navigate, onLogin }) => {
           >
             {loading ? 'Entrando…' : 'Entrar'}
           </button>
+
+          <button
+            type="button"
+            onClick={() => navigate('/reset-password')}
+            style={{ background: 'none', border: 'none', color: 'var(--accent-soft)', cursor: 'pointer', fontSize: '12px', fontWeight: 600, padding: 0, marginTop: '8px', textAlign: 'center', width: '100%' }}
+          >
+            Esqueceu sua senha?
+          </button>
         </form>
 
         <p style={{ textAlign: 'center', fontSize: '13px', color: 'var(--fg-muted)', marginTop: '24px' }}>

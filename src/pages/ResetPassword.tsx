@@ -16,11 +16,12 @@ export const ResetPassword: React.FC<ResetPasswordProps> = ({ navigate }) => {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (data.session) {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
         setStep('confirm');
       }
     });
+    return () => subscription.unsubscribe();
   }, []);
 
   async function handleRequestReset(e: React.FormEvent) {

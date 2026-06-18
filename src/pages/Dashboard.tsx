@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Pedido, Status } from '../types';
 import { fetchPedidos } from '../lib/pedidos';
 import { supabase } from '../lib/supabase';
+import { EnviarObraModal } from '../components/EnviarObraModal';
 
 interface DashboardProps {
   navigate: (path: string, section?: string) => void;
@@ -31,10 +32,10 @@ function getStatusColor(status: Status): string {
 
 interface PedidoCardProps {
   pedido: Pedido;
-  onViewDetails: () => void;
+  onSendObra: () => void;
 }
 
-const PedidoCard: React.FC<PedidoCardProps> = ({ pedido, onViewDetails }) => {
+const PedidoCard: React.FC<PedidoCardProps> = ({ pedido, onSendObra }) => {
   const statusColor = getStatusColor(pedido.status);
 
   return (
@@ -47,20 +48,8 @@ const PedidoCard: React.FC<PedidoCardProps> = ({ pedido, onViewDetails }) => {
         display: 'flex',
         flexDirection: 'column',
         gap: '16px',
-        cursor: 'pointer',
         transition: 'all 200ms ease-out',
       }}
-      onMouseEnter={(e) => {
-        (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-accent)';
-        (e.currentTarget as HTMLElement).style.background = 'var(--bg-card-hi)';
-        (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)';
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)';
-        (e.currentTarget as HTMLElement).style.background = 'var(--bg-card)';
-        (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
-      }}
-      onClick={onViewDetails}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
         <div>
@@ -119,14 +108,21 @@ const PedidoCard: React.FC<PedidoCardProps> = ({ pedido, onViewDetails }) => {
         </div>
       </div>
 
+      {pedido.status === 'RECEBIDO' && !pedido.arquivoUrl && (
+        <button
+          className="btn btn-primary"
+          style={{ width: '100%', fontSize: '13px', height: '36px' }}
+          onClick={onSendObra}
+        >
+          📤 Enviar minha obra
+        </button>
+      )}
+
       {pedido.certificado && (
         <button
           className="btn btn-secondary"
           style={{ width: '100%', fontSize: '13px', height: '36px' }}
-          onClick={(e) => {
-            e.stopPropagation();
-            alert('Download do certificado iniciado!');
-          }}
+          onClick={() => alert('Download do certificado iniciado!')}
         >
           📥 Baixar Certificado
         </button>
@@ -140,16 +136,21 @@ export const Dashboard: React.FC<DashboardProps> = ({ navigate }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [userId, setUserId] = useState<string | null>(null);
+  const [pedidoSelecionado, setPedidoSelecionado] = useState<Pedido | null>(null);
+
+  function reloadPedidos(uid: string) {
+    fetchPedidos(uid)
+      .then(setPedidos)
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       const uid = data.session?.user.id ?? null;
       setUserId(uid);
       if (uid) {
-        fetchPedidos(uid)
-          .then(setPedidos)
-          .catch((err) => setError(err.message))
-          .finally(() => setLoading(false));
+        reloadPedidos(uid);
       } else {
         setLoading(false);
       }
@@ -237,7 +238,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ navigate }) => {
                 <PedidoCard
                   key={pedido.id}
                   pedido={pedido}
-                  onViewDetails={() => alert(`Detalhes do pedido ${pedido.protocolo}`)}
+                  onSendObra={() => setPedidoSelecionado(pedido)}
                 />
               ))}
             </div>
@@ -270,6 +271,18 @@ export const Dashboard: React.FC<DashboardProps> = ({ navigate }) => {
           )}
         </div>
       </section>
+
+      {pedidoSelecionado && userId && (
+        <EnviarObraModal
+          pedido={pedidoSelecionado}
+          userId={userId}
+          onClose={() => setPedidoSelecionado(null)}
+          onSuccess={() => {
+            setPedidoSelecionado(null);
+            reloadPedidos(userId);
+          }}
+        />
+      )}
     </main>
   );
 };

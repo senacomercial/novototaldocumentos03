@@ -38,6 +38,7 @@ function rowToPedido(row: PedidoRow): Pedido {
     progress: row.progress,
     valor: Number(row.valor),
     certificado: row.certificado,
+    arquivoUrl: row.arquivo_url,
   };
 }
 
@@ -49,6 +50,34 @@ export async function fetchPedidos(userId: string): Promise<Pedido[]> {
     .order('created_at', { ascending: false });
   if (error) throw error;
   return ((data as PedidoRow[]) ?? []).map(rowToPedido);
+}
+
+export async function enviarObra(
+  userId: string,
+  pedidoId: string,
+  params: { categoria: Categoria; categoriaName: string; titulo: string; arquivo: File }
+): Promise<void> {
+  const ext = params.arquivo.name.split('.').pop();
+  const path = `${userId}/${pedidoId}.${ext}`;
+
+  const { error: uploadErr } = await supabase.storage
+    .from('obras')
+    .upload(path, params.arquivo, { upsert: true });
+  if (uploadErr) throw uploadErr;
+
+  const { error: updateErr } = await supabase
+    .from('pedidos')
+    .update({
+      categoria: params.categoria,
+      categoria_name: params.categoriaName,
+      titulo: params.titulo,
+      arquivo_url: path,
+      status: 'EM_ANALISE',
+      progress: 20,
+    })
+    .eq('id', pedidoId)
+    .eq('user_id', userId);
+  if (updateErr) throw updateErr;
 }
 
 export async function createPedido(

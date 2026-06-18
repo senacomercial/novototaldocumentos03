@@ -1,4 +1,24 @@
-import { CategoryInfo, Pacote, Beneficio, HowStep, FAQ, Pedido } from '../types';
+import { CategoryInfo, Categoria, Pacote, Beneficio, HowStep, FAQ, Pedido } from '../types';
+
+// As 16 categorias individuais aceitas para um pedido (usadas no formulário de envio da obra)
+export const ALL_CATEGORIAS: { key: Categoria; name: string }[] = [
+  { key: 'MUSICAS', name: 'Músicas' },
+  { key: 'LETRAS', name: 'Letras' },
+  { key: 'CLIPES', name: 'Clipes' },
+  { key: 'TEXTOS', name: 'Textos' },
+  { key: 'LIVROS', name: 'Livros' },
+  { key: 'EBOOKS', name: 'E-books' },
+  { key: 'CONTRATOS', name: 'Contratos' },
+  { key: 'TESES', name: 'Teses' },
+  { key: 'CURSOS', name: 'Cursos' },
+  { key: 'FOTOGRAFIAS', name: 'Fotografias' },
+  { key: 'ARTES', name: 'Artes' },
+  { key: 'ANUNCIOS', name: 'Anúncios' },
+  { key: 'VIDEOS', name: 'Vídeos' },
+  { key: 'PLANTAS', name: 'Plantas' },
+  { key: 'PROJETOS', name: 'Projetos' },
+  { key: 'PERSONAGENS', name: 'Personagens' },
+];
 
 export const CATEGORIES: CategoryInfo[] = [
   { key: 'MUSICAS', name: 'Músicas e Letras', desc: 'Composições musicais, letras e obras líricas.', icon: 'Music' },

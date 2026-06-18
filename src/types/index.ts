@@ -55,6 +55,7 @@ export interface Pedido {
   progress: number;
   valor: number;
   certificado?: boolean;
+  arquivoUrl?: string | null;
 }
 
 export interface User {

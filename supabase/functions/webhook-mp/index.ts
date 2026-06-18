@@ -137,7 +137,7 @@ serve(async (req) => {
         method: 'POST',
         headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          from: 'Totalis <onboarding@resend.dev>',
+          from: 'Totalis <naoresponda@app.registrototalis.com.br>',
           to: [email],
           subject: `✅ Pedido recebido — Protocolo ${protocolo}`,
           html: emailHtml,

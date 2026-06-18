@@ -78,6 +78,13 @@ export async function enviarObra(
     .eq('id', pedidoId)
     .eq('user_id', userId);
   if (updateErr) throw updateErr;
+
+  // Notifica o admin por email — falha aqui não deve impedir o envio da obra
+  try {
+    await supabase.functions.invoke('notificar-envio-obra', { body: { pedido_id: pedidoId } });
+  } catch {
+    // ignorado: notificação é best-effort
+  }
 }
 
 export async function createPedido(

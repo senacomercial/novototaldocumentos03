@@ -9,6 +9,7 @@ import { Consultar } from './pages/Consultar';
 import { Obrigado } from './pages/Obrigado';
 import { Login } from './pages/Login';
 import { Cadastro } from './pages/Cadastro';
+import { Admin } from './pages/Admin';
 import { supabase } from './lib/supabase';
 
 const DEFAULT_TWEAKS: Tweaks = {
@@ -95,6 +96,7 @@ const AppContent: React.FC = () => {
         <Route path="/obrigado" element={<Obrigado navigate={handleNavigate} />} />
         <Route path="/login" element={<Login navigate={handleNavigate} onLogin={handleLogin} />} />
         <Route path="/cadastro" element={<Cadastro navigate={handleNavigate} onLogin={handleLogin} />} />
+        <Route path="/admin" element={<Admin navigate={handleNavigate} />} />
       </Routes>
 
       <Footer navigate={handleNavigate} />

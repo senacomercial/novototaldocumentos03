@@ -17,31 +17,45 @@ export const ResetPassword: React.FC<ResetPasswordProps> = ({ navigate }) => {
 
   useEffect(() => {
     const checkSession = async () => {
+      console.log('Hash da URL:', window.location.hash);
+
       const { data } = await supabase.auth.getSession();
+      console.log('Sessão atual:', data.session ? 'SIM' : 'NÃO');
+
       if (data.session) {
         setStep('confirm');
         return;
       }
 
       const hash = window.location.hash;
+      console.log('Procurando por access_token no hash...');
+
       if (hash.includes('access_token') && hash.includes('type=recovery')) {
+        console.log('Encontrado! Processando token...');
         const params = new URLSearchParams(hash.substring(1));
         const accessToken = params.get('access_token');
         const refreshToken = params.get('refresh_token');
 
+        console.log('Access token:', accessToken ? 'SIM' : 'NÃO');
+        console.log('Refresh token:', refreshToken ? 'SIM' : 'NÃO');
+
         if (accessToken && refreshToken) {
+          console.log('Chamando setSession...');
           await supabase.auth.setSession({
             access_token: accessToken,
             refresh_token: refreshToken,
           });
           setStep('confirm');
         }
+      } else {
+        console.log('Hash não contém access_token ou type=recovery');
       }
     };
 
     checkSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log('Auth state changed, sessão:', session ? 'SIM' : 'NÃO');
       if (session) {
         setStep('confirm');
       }

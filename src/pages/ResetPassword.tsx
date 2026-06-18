@@ -16,6 +16,31 @@ export const ResetPassword: React.FC<ResetPasswordProps> = ({ navigate }) => {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        setStep('confirm');
+        return;
+      }
+
+      const hash = window.location.hash;
+      if (hash.includes('access_token') && hash.includes('type=recovery')) {
+        const params = new URLSearchParams(hash.substring(1));
+        const accessToken = params.get('access_token');
+        const refreshToken = params.get('refresh_token');
+
+        if (accessToken && refreshToken) {
+          await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+          setStep('confirm');
+        }
+      }
+    };
+
+    checkSession();
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
         setStep('confirm');

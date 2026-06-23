@@ -151,6 +151,43 @@ serve(async (req) => {
         sucesso,
         erro:      sucesso ? null : await emailRes.text(),
       });
+
+      // Notificação de nova compra para o admin
+      const ADMIN_EMAIL = Deno.env.get('ADMIN_EMAIL');
+      if (ADMIN_EMAIL) {
+        const label = pacote.registros === 1 ? '1 registro' : `${pacote.registros} registros`;
+        await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            from: 'Totalis <naoresponda@app.registrototalis.com.br>',
+            to: [ADMIN_EMAIL],
+            subject: `💰 Nova compra — ${label} — ${email}`,
+            html: `<!DOCTYPE html><html lang="pt-BR"><body style="margin:0;padding:0;background:#07060b;font-family:Inter,system-ui,sans-serif;color:#f5f3ff;">
+<table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;margin:0 auto;padding:32px 24px;">
+  <tr><td>
+    <div style="font-size:22px;font-weight:800;color:#c084fc;margin-bottom:24px;">Totalis</div>
+    <div style="background:#14111f;border:1px solid rgba(168,85,247,0.32);border-radius:12px;padding:28px;">
+      <div style="font-size:13px;color:#c084fc;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;">Nova compra recebida 💰</div>
+      <table style="width:100%;font-size:14px;border-collapse:collapse;">
+        <tr><td style="color:#b8b3c7;padding:6px 0;width:140px;">Protocolo</td><td style="font-family:monospace;color:#c084fc;font-weight:700;">${protocolo}</td></tr>
+        <tr><td style="color:#b8b3c7;padding:6px 0;">Pacote</td><td>${label}</td></tr>
+        <tr><td style="color:#b8b3c7;padding:6px 0;">Valor</td><td style="font-weight:700;">R$ ${valor.toFixed(2).replace('.', ',')}</td></tr>
+        <tr><td style="color:#b8b3c7;padding:6px 0;">Cliente</td><td>${email}</td></tr>
+        <tr><td style="color:#b8b3c7;padding:6px 0;">Payment ID</td><td style="font-family:monospace;font-size:12px;">${mp_payment_id}</td></tr>
+      </table>
+    </div>
+    <div style="text-align:center;margin-top:24px;">
+      <a href="${APP_URL}/admin" style="display:inline-block;background:linear-gradient(180deg,#c084fc,#7c3aed);color:#fff;font-weight:700;font-size:14px;padding:12px 28px;border-radius:8px;text-decoration:none;">
+        Ver no painel →
+      </a>
+    </div>
+  </td></tr>
+</table>
+</body></html>`,
+          }),
+        }).catch(() => { /* best-effort */ });
+      }
     }
 
     return new Response(JSON.stringify({ ok: true, protocolo, userId }), {

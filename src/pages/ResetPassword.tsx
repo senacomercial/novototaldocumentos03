@@ -28,28 +28,48 @@ export const ResetPassword: React.FC<ResetPasswordProps> = ({ navigate }) => {
       return false;
     };
 
-    // Tenta verificar a sessão múltiplas vezes com delay
-    const interval = setInterval(async () => {
-      checkCount++;
-      const found = await checkSession();
-      if (found || checkCount >= maxChecks) {
-        clearInterval(interval);
-        if (!found) setStep('request');
-      }
-    }, 500);
+    const tryExchangeCode = async () => {
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get('code');
+      if (!code) return false;
 
-    // Fallback: listener do Supabase
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session || event === 'PASSWORD_RECOVERY') {
-        clearInterval(interval);
-        setStep('confirm');
+      const { error: exchangeErr } = await supabase.auth.exchangeCodeForSession(code);
+      if (exchangeErr) {
+        setError(`Erro ao processar link: ${exchangeErr.message}`);
+        setStep('request');
+        return true; // tratado (com erro) — não continuar tentando
       }
-    });
-
-    return () => {
-      clearInterval(interval);
-      subscription.unsubscribe();
+      setStep('confirm');
+      return true;
     };
+
+    (async () => {
+      const handled = await tryExchangeCode();
+      if (handled) return;
+
+      // Tenta verificar a sessão múltiplas vezes com delay
+      const interval = setInterval(async () => {
+        checkCount++;
+        const found = await checkSession();
+        if (found || checkCount >= maxChecks) {
+          clearInterval(interval);
+          if (!found) setStep('request');
+        }
+      }, 500);
+
+      // Fallback: listener do Supabase
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+        if (session || event === 'PASSWORD_RECOVERY') {
+          clearInterval(interval);
+          setStep('confirm');
+        }
+      });
+
+      return () => {
+        clearInterval(interval);
+        subscription.unsubscribe();
+      };
+    })();
   }, []);
 
   async function handleRequestReset(e: React.FormEvent) {

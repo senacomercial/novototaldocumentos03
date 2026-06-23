@@ -36,6 +36,7 @@ export const Cadastro: React.FC<CadastroProps> = ({ navigate, onLogin }) => {
         }
         navigate('/dashboard');
       } else {
+        // Email confirmation required — don't remove pacote_pendente yet
         setSuccess(true);
       }
     } catch (err: unknown) {

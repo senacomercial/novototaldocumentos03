@@ -10,6 +10,7 @@ import { Obrigado } from './pages/Obrigado';
 import { Login } from './pages/Login';
 import { Cadastro } from './pages/Cadastro';
 import { ResetPassword } from './pages/ResetPassword';
+import { ResetPasswordConfirm } from './pages/ResetPasswordConfirm';
 import { Admin } from './pages/Admin';
 import { supabase } from './lib/supabase';
 
@@ -98,6 +99,7 @@ const AppContent: React.FC = () => {
         <Route path="/login" element={<Login navigate={handleNavigate} onLogin={handleLogin} />} />
         <Route path="/cadastro" element={<Cadastro navigate={handleNavigate} onLogin={handleLogin} />} />
         <Route path="/reset-password" element={<ResetPassword navigate={handleNavigate} />} />
+        <Route path="/reset-password-confirm" element={<ResetPasswordConfirm navigate={handleNavigate} />} />
         <Route path="/admin" element={<Admin navigate={handleNavigate} />} />
       </Routes>
 

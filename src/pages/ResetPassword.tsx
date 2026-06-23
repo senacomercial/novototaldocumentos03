@@ -1,76 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { resetPasswordForEmail, updatePassword } from '../lib/auth';
-import { supabase } from '../lib/supabase';
+import React, { useState } from 'react';
+import { resetPasswordForEmail } from '../lib/auth';
 
 interface ResetPasswordProps {
   navigate: (path: string, section?: string) => void;
 }
 
 export const ResetPassword: React.FC<ResetPasswordProps> = ({ navigate }) => {
-  const [step, setStep] = useState<'request' | 'confirm' | 'verifying'>('verifying');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
-
-  useEffect(() => {
-    let checkCount = 0;
-    const maxChecks = 8; // até 4 segundos (8 x 500ms)
-
-    const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        setStep('confirm');
-        return true;
-      }
-      return false;
-    };
-
-    const tryExchangeCode = async () => {
-      const params = new URLSearchParams(window.location.search);
-      const code = params.get('code');
-      if (!code) return false;
-
-      const { error: exchangeErr } = await supabase.auth.exchangeCodeForSession(code);
-      if (exchangeErr) {
-        setError(`Erro ao processar link: ${exchangeErr.message}`);
-        setStep('request');
-        return true; // tratado (com erro) — não continuar tentando
-      }
-      setStep('confirm');
-      return true;
-    };
-
-    (async () => {
-      const handled = await tryExchangeCode();
-      if (handled) return;
-
-      // Tenta verificar a sessão múltiplas vezes com delay
-      const interval = setInterval(async () => {
-        checkCount++;
-        const found = await checkSession();
-        if (found || checkCount >= maxChecks) {
-          clearInterval(interval);
-          if (!found) setStep('request');
-        }
-      }, 500);
-
-      // Fallback: listener do Supabase
-      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-        if (session || event === 'PASSWORD_RECOVERY') {
-          clearInterval(interval);
-          setStep('confirm');
-        }
-      });
-
-      return () => {
-        clearInterval(interval);
-        subscription.unsubscribe();
-      };
-    })();
-  }, []);
 
   async function handleRequestReset(e: React.FormEvent) {
     e.preventDefault();
@@ -88,37 +27,6 @@ export const ResetPassword: React.FC<ResetPasswordProps> = ({ navigate }) => {
     }
   }
 
-  async function handleConfirmReset(e: React.FormEvent) {
-    e.preventDefault();
-    setError('');
-    if (password !== confirmPassword) {
-      setError('As senhas não correspondem.');
-      return;
-    }
-    if (password.length < 6) {
-      setError('A senha deve ter pelo menos 6 caracteres.');
-      return;
-    }
-    setLoading(true);
-    try {
-      await updatePassword(password);
-      setMessage('✅ Senha redefinida com sucesso! Redirecionando...');
-      setTimeout(() => navigate('/dashboard'), 2000);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Erro ao redefinir senha.');
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  if (step === 'verifying') {
-    return (
-      <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 16px' }}>
-        <p style={{ color: 'var(--fg-muted)' }}>Verificando link…</p>
-      </main>
-    );
-  }
-
   return (
     <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 16px' }}>
       <div style={{
@@ -130,89 +38,36 @@ export const ResetPassword: React.FC<ResetPasswordProps> = ({ navigate }) => {
         padding: '40px',
       }}>
         <h1 className="display" style={{ fontSize: '28px', marginBottom: '8px' }}>
-          {step === 'request' ? 'Recuperar Senha' : 'Definir Nova Senha'}
+          Recuperar Senha
         </h1>
         <p style={{ color: 'var(--fg-muted)', fontSize: '14px', marginBottom: '32px' }}>
-          {step === 'request'
-            ? 'Digite seu e-mail para receber um link de recuperação'
-            : 'Crie uma nova senha para sua conta'}
+          Digite seu e-mail para receber um link de recuperação
         </p>
 
-        <form onSubmit={step === 'request' ? handleRequestReset : handleConfirmReset} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {step === 'request' ? (
-            <div>
-              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '6px' }}>
-                E-mail
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                placeholder="seu@email.com"
-                style={{
-                  width: '100%',
-                  padding: '10px 14px',
-                  background: 'var(--bg-surface)',
-                  border: '1px solid var(--border)',
-                  borderRadius: 'var(--r-sm)',
-                  color: 'var(--fg)',
-                  fontSize: '14px',
-                  outline: 'none',
-                  boxSizing: 'border-box',
-                }}
-              />
-            </div>
-          ) : (
-            <>
-              <div>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '6px' }}>
-                  Nova Senha
-                </label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  placeholder="Mínimo 6 caracteres"
-                  style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    background: 'var(--bg-surface)',
-                    border: '1px solid var(--border)',
-                    borderRadius: 'var(--r-sm)',
-                    color: 'var(--fg)',
-                    fontSize: '14px',
-                    outline: 'none',
-                    boxSizing: 'border-box',
-                  }}
-                />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '6px' }}>
-                  Confirmar Senha
-                </label>
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                  placeholder="Confirme sua senha"
-                  style={{
-                    width: '100%',
-                    padding: '10px 14px',
-                    background: 'var(--bg-surface)',
-                    border: '1px solid var(--border)',
-                    borderRadius: 'var(--r-sm)',
-                    color: 'var(--fg)',
-                    fontSize: '14px',
-                    outline: 'none',
-                    boxSizing: 'border-box',
-                  }}
-                />
-              </div>
-            </>
-          )}
+        <form onSubmit={handleRequestReset} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, marginBottom: '6px' }}>
+              E-mail
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              placeholder="seu@email.com"
+              style={{
+                width: '100%',
+                padding: '10px 14px',
+                background: 'var(--bg-surface)',
+                border: '1px solid var(--border)',
+                borderRadius: 'var(--r-sm)',
+                color: 'var(--fg)',
+                fontSize: '14px',
+                outline: 'none',
+                boxSizing: 'border-box',
+              }}
+            />
+          </div>
 
           {error && (
             <p style={{ color: '#ef4444', fontSize: '13px', margin: 0 }}>{error}</p>
@@ -227,7 +82,7 @@ export const ResetPassword: React.FC<ResetPasswordProps> = ({ navigate }) => {
             disabled={loading}
             style={{ height: '44px', marginTop: '8px' }}
           >
-            {loading ? 'Processando…' : step === 'request' ? 'Enviar Link' : 'Redefinir Senha'}
+            {loading ? 'Enviando…' : 'Enviar Link'}
           </button>
         </form>
 

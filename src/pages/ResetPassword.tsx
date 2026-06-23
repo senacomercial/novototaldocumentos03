@@ -16,26 +16,39 @@ export const ResetPassword: React.FC<ResetPasswordProps> = ({ navigate }) => {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    // O cliente Supabase processa o link de recuperação automaticamente ao carregar
-    // a página (detectSessionInUrl). Quando isso acontece, ele dispara o evento
-    // PASSWORD_RECOVERY — é o sinal correto de que o usuário pode definir nova senha.
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'PASSWORD_RECOVERY') {
+    let checkCount = 0;
+    const maxChecks = 8; // até 4 segundos (8 x 500ms)
+
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        setStep('confirm');
+        return true;
+      }
+      return false;
+    };
+
+    // Tenta verificar a sessão múltiplas vezes com delay
+    const interval = setInterval(async () => {
+      checkCount++;
+      const found = await checkSession();
+      if (found || checkCount >= maxChecks) {
+        clearInterval(interval);
+        if (!found) setStep('request');
+      }
+    }, 500);
+
+    // Fallback: listener do Supabase
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session || event === 'PASSWORD_RECOVERY') {
+        clearInterval(interval);
         setStep('confirm');
       }
     });
 
-    supabase.auth.getSession().then(({ data }) => {
-      setStep((current) => (current === 'verifying' && !data.session ? 'request' : current));
-    });
-
-    const timeout = setTimeout(() => {
-      setStep((current) => (current === 'verifying' ? 'request' : current));
-    }, 2500);
-
     return () => {
+      clearInterval(interval);
       subscription.unsubscribe();
-      clearTimeout(timeout);
     };
   }, []);
 

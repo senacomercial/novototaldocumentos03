@@ -15,27 +15,43 @@ export const ResetPasswordConfirm: React.FC<ResetPasswordConfirmProps> = ({ navi
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
+    let mounted = true;
+
     const tryExchangeCode = async () => {
       const params = new URLSearchParams(window.location.search);
       const code = params.get('code');
 
+      // Se houver um code, fazer a troca
       if (code) {
         const { error: exchangeErr } = await supabase.auth.exchangeCodeForSession(code);
         if (exchangeErr) {
-          setError(`Erro ao processar link: ${exchangeErr.message}`);
+          if (mounted) setError(`Erro ao processar link: ${exchangeErr.message}`);
           return;
         }
       }
 
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        setIsReady(true);
-      } else {
+      // Aguardar a sessão ficar disponível (com retry)
+      for (let i = 0; i < 15; i++) {
+        const { data } = await supabase.auth.getSession();
+        if (data.session) {
+          if (mounted) setIsReady(true);
+          return;
+        }
+        // Aguardar 300ms antes de tentar novamente
+        await new Promise(resolve => setTimeout(resolve, 300));
+      }
+
+      // Se não conseguiu após retries
+      if (mounted) {
         setError('Sessão expirada. Solicite um novo link de recuperação.');
       }
     };
 
     tryExchangeCode();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   async function handleResetPassword(e: React.FormEvent) {

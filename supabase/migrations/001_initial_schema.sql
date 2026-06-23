@@ -47,7 +47,7 @@ create table if not exists public.pedidos (
   titulo          text not null default 'Aguardando envio da obra',
   status          text not null default 'RECEBIDO',
   data_pedido     date default current_date,
-  prazo_estimado  date default (current_date + interval '20 days'),
+  prazo_estimado  date default (current_date + interval '1 day'),
   progress        int  default 0,
   valor           numeric(10,2) default 0,
   certificado     boolean default false,

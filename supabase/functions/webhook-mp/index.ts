@@ -193,7 +193,7 @@ function buildEmailBoasVindas(p: {
         </h1>
         <p style="margin:0;color:#b8b3c7;font-size:15px;line-height:1.5;">
           Seu pagamento foi aprovado e recebemos seu pedido de ${label}.<br>
-          O prazo padrão é de <strong style="color:#f5f3ff;">20 dias úteis</strong> a partir do envio da obra.
+          O prazo padrão é de <strong style="color:#f5f3ff;">24 horas</strong> a partir do envio da obra.
         </p>
       </div>
 

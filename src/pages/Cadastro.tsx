@@ -40,7 +40,28 @@ export const Cadastro: React.FC<CadastroProps> = ({ navigate, onLogin }) => {
         setSuccess(true);
       }
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Erro ao criar conta.');
+      const msg = err instanceof Error ? err.message : '';
+      // Usuário já existe — tenta fazer login com a senha informada
+      if (msg.toLowerCase().includes('already registered') || msg.toLowerCase().includes('already exists')) {
+        try {
+          const { signIn } = await import('../lib/auth');
+          await signIn(email, password);
+          onLogin();
+          const pacotePendente = localStorage.getItem('pacote_pendente');
+          if (pacotePendente) {
+            localStorage.removeItem('pacote_pendente');
+            const { checkout_url } = await criarCheckout(pacotePendente, email);
+            window.location.href = checkout_url;
+            return;
+          }
+          navigate('/dashboard');
+          return;
+        } catch {
+          setError('Este e-mail já possui uma conta. Clique em "Entrar" para fazer login ou redefina sua senha.');
+          return;
+        }
+      }
+      setError(msg || 'Erro ao criar conta.');
     } finally {
       setLoading(false);
     }

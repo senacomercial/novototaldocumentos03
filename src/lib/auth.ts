@@ -10,14 +10,6 @@ export async function signUp(email: string, password: string, nomeCompleto: stri
     },
   });
   if (error) throw error;
-
-  // Se email confirmation está habilitado mas queremos auto-login,
-  // fazer login imediatamente após signup
-  if (data.user && !data.session) {
-    const { data: signInData } = await supabase.auth.signInWithPassword({ email, password });
-    return signInData;
-  }
-
   return data;
 }
 

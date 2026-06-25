@@ -58,6 +58,11 @@ const AppContent: React.FC = () => {
       setLoggedIn(!!session);
       const base = window.location.hostname.includes('github.io') ? '/novototaldocumentos03' : '';
       setCurrentRoute(window.location.pathname.replace(base, '') || '/');
+
+      if (_event === 'PASSWORD_RECOVERY') {
+        navigate('/reset-password-confirm');
+        setCurrentRoute('/reset-password-confirm');
+      }
     });
 
     return () => subscription.unsubscribe();

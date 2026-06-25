@@ -21,36 +21,40 @@ export const ResetPasswordConfirm: React.FC<ResetPasswordConfirmProps> = ({ navi
       const params = new URLSearchParams(window.location.search);
       const code = params.get('code');
 
-      // Se houver um code, fazer a troca
+      // Tenta trocar o code PKCE se existir
       if (code) {
         const { error: exchangeErr } = await supabase.auth.exchangeCodeForSession(code);
         if (exchangeErr) {
-          if (mounted) setError(`Erro ao processar link: ${exchangeErr.message}`);
-          return;
+          // Ignora erro de PKCE — o evento PASSWORD_RECOVERY do App.tsx
+          // já estabelece a sessão; apenas aguarda abaixo
         }
       }
 
-      // Aguardar a sessão ficar disponível (com retry)
-      for (let i = 0; i < 15; i++) {
+      // Aguarda sessão ficar disponível (até 6 segundos)
+      for (let i = 0; i < 20; i++) {
         const { data } = await supabase.auth.getSession();
         if (data.session) {
           if (mounted) setIsReady(true);
           return;
         }
-        // Aguardar 300ms antes de tentar novamente
         await new Promise(resolve => setTimeout(resolve, 300));
       }
 
-      // Se não conseguiu após retries
-      if (mounted) {
-        setError('Sessão expirada. Solicite um novo link de recuperação.');
-      }
+      if (mounted) setError('Sessão expirada. Solicite um novo link de recuperação.');
     };
+
+    // Também escuta o evento PASSWORD_RECOVERY como fallback
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if ((event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN') && session && mounted) {
+        setIsReady(true);
+      }
+    });
 
     tryExchangeCode();
 
     return () => {
       mounted = false;
+      subscription.unsubscribe();
     };
   }, []);
 

@@ -17,20 +17,34 @@ export const ResetPasswordConfirm: React.FC<ResetPasswordConfirmProps> = ({ navi
   useEffect(() => {
     let mounted = true;
 
-    const tryExchangeCode = async () => {
-      const params = new URLSearchParams(window.location.search);
-      const code = params.get('code');
-
-      // Tenta trocar o code PKCE se existir
-      if (code) {
-        const { error: exchangeErr } = await supabase.auth.exchangeCodeForSession(code);
-        if (exchangeErr) {
-          // Ignora erro de PKCE — o evento PASSWORD_RECOVERY do App.tsx
-          // já estabelece a sessão; apenas aguarda abaixo
+    const tryEstablishSession = async () => {
+      // 1. Extrai access_token do hash (fluxo implicit após /auth/v1/verify)
+      const hash = window.location.hash;
+      if (hash.includes('access_token=')) {
+        const hashParams = new URLSearchParams(hash.substring(1));
+        const access_token = hashParams.get('access_token');
+        const refresh_token = hashParams.get('refresh_token') ?? '';
+        if (access_token) {
+          const { error: sessionErr } = await supabase.auth.setSession({ access_token, refresh_token });
+          if (!sessionErr && mounted) {
+            setIsReady(true);
+            return;
+          }
         }
       }
 
-      // Aguarda sessão ficar disponível (até 6 segundos)
+      // 2. Tenta trocar code PKCE se existir na query string
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get('code');
+      if (code) {
+        const { error: exchangeErr } = await supabase.auth.exchangeCodeForSession(code);
+        if (!exchangeErr) {
+          if (mounted) setIsReady(true);
+          return;
+        }
+      }
+
+      // 3. Aguarda sessão estabelecida via onAuthStateChange (até 6 s)
       for (let i = 0; i < 20; i++) {
         const { data } = await supabase.auth.getSession();
         if (data.session) {
@@ -43,14 +57,13 @@ export const ResetPasswordConfirm: React.FC<ResetPasswordConfirmProps> = ({ navi
       if (mounted) setError('Sessão expirada. Solicite um novo link de recuperação.');
     };
 
-    // Também escuta o evento PASSWORD_RECOVERY como fallback
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if ((event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN') && session && mounted) {
         setIsReady(true);
       }
     });
 
-    tryExchangeCode();
+    tryEstablishSession();
 
     return () => {
       mounted = false;

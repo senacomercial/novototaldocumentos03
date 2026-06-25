@@ -18,24 +18,30 @@ export const ResetPasswordConfirm: React.FC<ResetPasswordConfirmProps> = ({ navi
     let mounted = true;
 
     const tryEstablishSession = async () => {
-      // 1. Extrai access_token do hash (fluxo implicit após /auth/v1/verify)
-      const hash = window.location.hash;
-      if (hash.includes('access_token=')) {
-        const hashParams = new URLSearchParams(hash.substring(1));
-        const access_token = hashParams.get('access_token');
-        const refresh_token = hashParams.get('refresh_token') ?? '';
-        if (access_token) {
-          const { error: sessionErr } = await supabase.auth.setSession({ access_token, refresh_token });
-          if (!sessionErr && mounted) {
-            setIsReady(true);
-            return;
-          }
+      // 1. Detecta erro imediato retornado pelo Supabase após verificação falhar
+      const searchParams = new URLSearchParams(window.location.search);
+      const urlError = searchParams.get('error') || searchParams.get('error_description');
+      const hashStr = window.location.hash;
+      const hashParams = new URLSearchParams(hashStr.substring(1));
+      const hashError = hashParams.get('error');
+      if (urlError || hashError) {
+        if (mounted) setError('Link inválido ou expirado. Solicite um novo link de recuperação.');
+        return;
+      }
+
+      // 2. Extrai access_token do hash (fluxo implicit após /auth/v1/verify)
+      const access_token = hashParams.get('access_token');
+      const refresh_token = hashParams.get('refresh_token') ?? '';
+      if (access_token) {
+        const { error: sessionErr } = await supabase.auth.setSession({ access_token, refresh_token });
+        if (!sessionErr && mounted) {
+          setIsReady(true);
+          return;
         }
       }
 
-      // 2. Tenta trocar code PKCE se existir na query string
-      const params = new URLSearchParams(window.location.search);
-      const code = params.get('code');
+      // 3. Tenta trocar code PKCE se existir na query string
+      const code = searchParams.get('code');
       if (code) {
         const { error: exchangeErr } = await supabase.auth.exchangeCodeForSession(code);
         if (!exchangeErr) {
@@ -44,7 +50,7 @@ export const ResetPasswordConfirm: React.FC<ResetPasswordConfirmProps> = ({ navi
         }
       }
 
-      // 3. Aguarda sessão estabelecida via onAuthStateChange (até 6 s)
+      // 4. Aguarda sessão estabelecida via onAuthStateChange (até 6 s)
       for (let i = 0; i < 20; i++) {
         const { data } = await supabase.auth.getSession();
         if (data.session) {
@@ -54,7 +60,7 @@ export const ResetPasswordConfirm: React.FC<ResetPasswordConfirmProps> = ({ navi
         await new Promise(resolve => setTimeout(resolve, 300));
       }
 
-      if (mounted) setError('Sessão expirada. Solicite um novo link de recuperação.');
+      if (mounted) setError('Link inválido ou expirado. Solicite um novo link de recuperação.');
     };
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {

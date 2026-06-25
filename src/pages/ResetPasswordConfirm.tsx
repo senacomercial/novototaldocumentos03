@@ -102,10 +102,21 @@ export const ResetPasswordConfirm: React.FC<ResetPasswordConfirmProps> = ({ navi
     }
   }
 
+  const debugInfo = typeof window !== 'undefined' ? {
+    hash: window.location.hash.substring(0, 80) || '(vazio)',
+    search: window.location.search || '(vazio)',
+  } : null;
+
   if (!isReady && !error) {
     return (
-      <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 16px' }}>
+      <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 16px', flexDirection: 'column', gap: '16px' }}>
         <p style={{ color: 'var(--fg-muted)' }}>Verificando link…</p>
+        {debugInfo && (
+          <div style={{ background: '#1a1626', border: '1px solid #4a3f6b', borderRadius: '8px', padding: '12px 16px', fontSize: '11px', fontFamily: 'monospace', color: '#a78bfa', maxWidth: '500px', width: '100%' }}>
+            <div><b>hash:</b> {debugInfo.hash}</div>
+            <div><b>search:</b> {debugInfo.search}</div>
+          </div>
+        )}
       </main>
     );
   }
@@ -181,7 +192,15 @@ export const ResetPasswordConfirm: React.FC<ResetPasswordConfirmProps> = ({ navi
           </div>
 
           {error && (
-            <p style={{ color: '#ef4444', fontSize: '13px', margin: 0 }}>{error}</p>
+            <>
+              <p style={{ color: '#ef4444', fontSize: '13px', margin: 0 }}>{error}</p>
+              {debugInfo && (
+                <div style={{ background: '#1a1626', border: '1px solid #4a3f6b', borderRadius: '8px', padding: '10px 14px', fontSize: '11px', fontFamily: 'monospace', color: '#a78bfa' }}>
+                  <div><b>hash:</b> {debugInfo.hash}</div>
+                  <div><b>search:</b> {debugInfo.search}</div>
+                </div>
+              )}
+            </>
           )}
           {message && (
             <p style={{ color: '#10b981', fontSize: '13px', margin: 0 }}>{message}</p>

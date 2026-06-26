@@ -32,7 +32,8 @@ export const Landing: React.FC<LandingProps> = ({ navigate, tweaks }) => {
       }
     } catch (err) {
       console.error('Erro no checkout:', err);
-      alert('Não foi possível iniciar o pagamento. Tente novamente em alguns instantes.');
+      const msg = err instanceof Error ? err.message : String(err);
+      alert(`Não foi possível iniciar o pagamento.\n\nDetalhe: ${msg}`);
     } finally {
       setLoadingPacote(null);
     }

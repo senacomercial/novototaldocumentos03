@@ -152,16 +152,21 @@ serve(async (req) => {
         erro:      sucesso ? null : await emailRes.text(),
       });
 
-      // Notificação de nova compra para o admin
+      // Notificação de nova compra para o(s) admin(s) — ADMIN_EMAIL pode conter
+      // vários endereços separados por vírgula.
       const ADMIN_EMAIL = Deno.env.get('ADMIN_EMAIL');
-      if (ADMIN_EMAIL) {
+      const adminEmails = (ADMIN_EMAIL ?? '')
+        .split(',')
+        .map((e) => e.trim())
+        .filter((e) => e.length > 0);
+      if (adminEmails.length > 0) {
         const label = pacote.registros === 1 ? '1 registro' : `${pacote.registros} registros`;
         await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({
             from: 'Totalis <naoresponda@app.registrototalis.com.br>',
-            to: [ADMIN_EMAIL],
+            to: adminEmails,
             subject: `💰 Nova compra — ${label} — ${email}`,
             html: `<!DOCTYPE html><html lang="pt-BR"><body style="margin:0;padding:0;background:#07060b;font-family:Inter,system-ui,sans-serif;color:#f5f3ff;">
 <table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;margin:0 auto;padding:32px 24px;">

@@ -58,12 +58,14 @@ serve(async (req) => {
       linksArquivos.push({ nome, url: signed.signedUrl });
 
       // Registra na tabela certificados (best-effort)
-      await supabase.from('certificados').insert({
-        pedido_id,
-        storage_path: caminho,
-        nome_arquivo: nome,
-        enviado_por_email: true,
-      }).catch(() => { /* se falhar, continua mesmo assim */ });
+      try {
+        await supabase.from('certificados').insert({
+          pedido_id,
+          storage_path: caminho,
+          nome_arquivo: nome,
+          enviado_por_email: true,
+        });
+      } catch { /* se falhar, continua mesmo assim */ }
     }
 
     // 3. Atualiza status do pedido para CONCLUIDO
@@ -102,12 +104,15 @@ serve(async (req) => {
       });
 
       emailEnviado = emailRes.ok;
-      await supabase.from('emails_log').insert({
-        pedido_id,
-        tipo: 'CONCLUSAO',
-        sucesso: emailEnviado,
-        erro: emailEnviado ? null : await emailRes.text(),
-      }).catch(() => { /* best-effort */ });
+      const erroEmail = emailEnviado ? null : await emailRes.text();
+      try {
+        await supabase.from('emails_log').insert({
+          pedido_id,
+          tipo: 'CONCLUSAO',
+          sucesso: emailEnviado,
+          erro: erroEmail,
+        });
+      } catch { /* best-effort */ }
     }
 
     return json({ ok: true, arquivosEntregues: linksArquivos.length, emailEnviado });

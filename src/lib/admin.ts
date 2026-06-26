@@ -127,8 +127,12 @@ export async function getObraSignedUrl(path: string): Promise<string> {
 }
 
 export async function uploadCertificado(pedidoId: string, file: File): Promise<string> {
-  const ext = file.name.split('.').pop();
-  const path = `certificados/${pedidoId}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+  // Grava sob o uid do admin (1ª pasta = auth.uid()) para passar na RLS do bucket obras.
+  const { data: { session } } = await supabase.auth.getSession();
+  const uid = session?.user.id;
+  if (!uid) throw new Error('Sessão expirada. Faça login novamente.');
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+  const path = `${uid}/certificados/${pedidoId}/${Date.now()}_${safeName}`;
   const { error } = await supabase.storage.from('obras').upload(path, file, { upsert: false });
   if (error) throw error;
   return path;

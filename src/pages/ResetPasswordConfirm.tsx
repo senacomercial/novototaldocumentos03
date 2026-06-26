@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { updatePassword } from '../lib/auth';
-import { supabase } from '../lib/supabase';
+import { supabase, capturedUrl } from '../lib/supabase';
 
 interface ResetPasswordConfirmProps {
   navigate: (path: string, section?: string) => void;
@@ -102,21 +102,23 @@ export const ResetPasswordConfirm: React.FC<ResetPasswordConfirmProps> = ({ navi
     }
   }
 
-  const debugInfo = typeof window !== 'undefined' ? {
-    hash: window.location.hash.substring(0, 80) || '(vazio)',
-    search: window.location.search || '(vazio)',
-  } : null;
+  const debugInfo = {
+    hashNow: window.location.hash.substring(0, 80) || '(vazio)',
+    searchNow: window.location.search || '(vazio)',
+    hashCapturado: capturedUrl.hash.substring(0, 80) || '(vazio)',
+    searchCapturado: capturedUrl.search || '(vazio)',
+  };
 
   if (!isReady && !error) {
     return (
       <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 16px', flexDirection: 'column', gap: '16px' }}>
         <p style={{ color: 'var(--fg-muted)' }}>Verificando link…</p>
-        {debugInfo && (
-          <div style={{ background: '#1a1626', border: '1px solid #4a3f6b', borderRadius: '8px', padding: '12px 16px', fontSize: '11px', fontFamily: 'monospace', color: '#a78bfa', maxWidth: '500px', width: '100%' }}>
-            <div><b>hash:</b> {debugInfo.hash}</div>
-            <div><b>search:</b> {debugInfo.search}</div>
+        <div style={{ background: '#1a1626', border: '1px solid #4a3f6b', borderRadius: '8px', padding: '12px 16px', fontSize: '11px', fontFamily: 'monospace', color: '#a78bfa', maxWidth: '500px', width: '100%' }}>
+            <div><b>hash (agora):</b> {debugInfo.hashNow}</div>
+            <div><b>search (agora):</b> {debugInfo.searchNow}</div>
+            <div><b>hash (carga):</b> {debugInfo.hashCapturado}</div>
+            <div><b>search (carga):</b> {debugInfo.searchCapturado}</div>
           </div>
-        )}
       </main>
     );
   }
@@ -194,12 +196,12 @@ export const ResetPasswordConfirm: React.FC<ResetPasswordConfirmProps> = ({ navi
           {error && (
             <>
               <p style={{ color: '#ef4444', fontSize: '13px', margin: 0 }}>{error}</p>
-              {debugInfo && (
-                <div style={{ background: '#1a1626', border: '1px solid #4a3f6b', borderRadius: '8px', padding: '10px 14px', fontSize: '11px', fontFamily: 'monospace', color: '#a78bfa' }}>
-                  <div><b>hash:</b> {debugInfo.hash}</div>
-                  <div><b>search:</b> {debugInfo.search}</div>
+              <div style={{ background: '#1a1626', border: '1px solid #4a3f6b', borderRadius: '8px', padding: '10px 14px', fontSize: '11px', fontFamily: 'monospace', color: '#a78bfa' }}>
+                  <div><b>hash (agora):</b> {debugInfo.hashNow}</div>
+                  <div><b>search (agora):</b> {debugInfo.searchNow}</div>
+                  <div><b>hash (carga):</b> {debugInfo.hashCapturado}</div>
+                  <div><b>search (carga):</b> {debugInfo.searchCapturado}</div>
                 </div>
-              )}
             </>
           )}
           {message && (

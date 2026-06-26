@@ -37,8 +37,11 @@ const AppContent: React.FC = () => {
     const paymentId = params.get('payment_id') || params.get('collection_id');
 
     if (redirectPath) {
-      // Must use React Router's navigate (not window.history.replaceState directly)
-      // so BrowserRouter actually re-renders the matched <Route>, not just the URL bar.
+      // Restaura hash perdido pelo 404.html do GitHub Pages (ex: #access_token=... do reset de senha)
+      const fragment = params.get('fragment');
+      if (fragment) {
+        window.history.replaceState(null, '', redirectPath + '#' + fragment);
+      }
       navigate(redirectPath, { replace: true });
       setCurrentRoute(redirectPath);
     } else if (paymentId && (paymentStatus === 'approved' || paymentStatus === 'pending')) {

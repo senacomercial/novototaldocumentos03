@@ -50,13 +50,13 @@ serve(async (req) => {
       const nome = caminho.split('/').pop() ?? caminho;
       linksArquivos.push({ nome, url: signed.signedUrl });
 
-      // Registra na tabela certificados
+      // Registra na tabela certificados (best-effort)
       await supabase.from('certificados').insert({
         pedido_id,
         storage_path: caminho,
         nome_arquivo: nome,
         enviado_por_email: true,
-      });
+      }).catch(() => { /* se falhar, continua mesmo assim */ });
     }
 
     // 3. Atualiza status do pedido para CONCLUIDO
@@ -100,7 +100,7 @@ serve(async (req) => {
         tipo: 'CONCLUSAO',
         sucesso: emailEnviado,
         erro: emailEnviado ? null : await emailRes.text(),
-      });
+      }).catch(() => { /* best-effort */ });
     }
 
     return json({ ok: true, arquivosEntregues: linksArquivos.length, emailEnviado });

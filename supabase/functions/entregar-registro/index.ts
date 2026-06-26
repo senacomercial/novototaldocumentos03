@@ -25,16 +25,23 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     );
 
-    // 1. Busca dados do pedido + email do cliente
+    // 1. Busca dados do pedido
     const { data: pedido, error: pedidoErr } = await supabase
       .from('pedidos')
-      .select('id, protocolo, titulo, categoria_name, user_id, users:user_id(email)')
+      .select('id, protocolo, titulo, categoria_name, user_id')
       .eq('id', pedido_id)
       .single();
 
-    if (pedidoErr || !pedido) return json({ error: 'Pedido não encontrado' }, 404);
+    if (pedidoErr || !pedido) {
+      return json({ error: `Pedido não encontrado: ${pedidoErr?.message ?? 'sem dados'}` }, 404);
+    }
 
-    const emailCliente = (pedido as { users: { email: string } | null }).users?.email ?? '';
+    // Busca email do cliente em auth.users (via admin API)
+    let emailCliente = '';
+    if (pedido.user_id) {
+      const { data: userData } = await supabase.auth.admin.getUserById(pedido.user_id);
+      emailCliente = userData?.user?.email ?? '';
+    }
 
     // 2. Gera URLs assinadas (7 dias) para cada arquivo
     const SETE_DIAS = 7 * 24 * 60 * 60;

@@ -16,6 +16,17 @@ export interface AdminPedido {
   arquivoUrl: string | null;
   notasInternas: string | null;
   userEmail: string;
+  nomeCompleto: string | null;
+  cpf: string | null;
+  emailAutor: string | null;
+  telefone: string | null;
+  logradouro: string | null;
+  numero: string | null;
+  complemento: string | null;
+  cidade: string | null;
+  estado: string | null;
+  cep: string | null;
+  descricao: string | null;
 }
 
 interface AdminPedidoRow {
@@ -33,6 +44,17 @@ interface AdminPedidoRow {
   arquivo_url: string | null;
   notas_internas: string | null;
   user_email: string;
+  nome_completo: string | null;
+  cpf: string | null;
+  email_autor: string | null;
+  telefone: string | null;
+  logradouro: string | null;
+  numero: string | null;
+  complemento: string | null;
+  cidade: string | null;
+  estado: string | null;
+  cep: string | null;
+  descricao: string | null;
 }
 
 function rowToAdminPedido(row: AdminPedidoRow): AdminPedido {
@@ -51,6 +73,17 @@ function rowToAdminPedido(row: AdminPedidoRow): AdminPedido {
     arquivoUrl: row.arquivo_url,
     notasInternas: row.notas_internas,
     userEmail: row.user_email,
+    nomeCompleto: row.nome_completo,
+    cpf: row.cpf,
+    emailAutor: row.email_autor,
+    telefone: row.telefone,
+    logradouro: row.logradouro,
+    numero: row.numero,
+    complemento: row.complemento,
+    cidade: row.cidade,
+    estado: row.estado,
+    cep: row.cep,
+    descricao: row.descricao,
   };
 }
 

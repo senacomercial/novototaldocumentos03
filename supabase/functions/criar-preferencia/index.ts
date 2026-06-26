@@ -61,7 +61,17 @@ serve(async (req) => {
     });
 
     const mpData = await mpRes.json();
-    if (!mpRes.ok) return json({ error: mpData.message ?? 'Erro no Mercado Pago' }, 502);
+    if (!mpRes.ok) {
+      // Mensagem detalhada para diagnóstico (status HTTP + mensagem do MP)
+      const detalhe = mpData.message ?? mpData.error ?? 'Erro desconhecido';
+      console.error('MP erro', mpRes.status, JSON.stringify(mpData));
+      if (mpRes.status === 401) {
+        return json({
+          error: `Token do Mercado Pago inválido (401). Verifique o secret MP_ACCESS_TOKEN no Supabase — deve ser o Access Token de PRODUÇÃO (começa com APP_USR-), sem espaços. Detalhe MP: ${detalhe}`,
+        }, 502);
+      }
+      return json({ error: `Mercado Pago (${mpRes.status}): ${detalhe}` }, 502);
+    }
 
     return json({
       checkout_url: mpData.init_point,         // produção

@@ -18,20 +18,33 @@ export const ResetPasswordConfirm: React.FC<ResetPasswordConfirmProps> = ({ navi
     let mounted = true;
 
     const tryEstablishSession = async () => {
-      // 1. Detecta erro imediato retornado pelo Supabase após verificação falhar
-      const searchParams = new URLSearchParams(window.location.search);
-      const urlError = searchParams.get('error') || searchParams.get('error_description');
-      const hashStr = window.location.hash;
-      const hashParams = new URLSearchParams(hashStr.substring(1));
-      const hashError = hashParams.get('error');
-      if (urlError || hashError) {
+      // Monta os parâmetros do token a partir da URL capturada no load do módulo
+      // (antes do React Router / Supabase limparem hash e search).
+      // O 404.html do GitHub Pages move o hash original para ?fragment=...,
+      // então o access_token pode vir tanto no hash quanto no fragment.
+      const tokenParams = new URLSearchParams();
+      // a) hash direto (#access_token=...)
+      if (capturedUrl.hash) {
+        const hp = new URLSearchParams(capturedUrl.hash.replace(/^#/, ''));
+        hp.forEach((v, k) => tokenParams.set(k, v));
+      }
+      // b) fragment preservado pelo 404.html (?fragment=access_token%3D...)
+      const searchParams = new URLSearchParams(capturedUrl.search);
+      const fragment = searchParams.get('fragment');
+      if (fragment) {
+        const fp = new URLSearchParams(fragment);
+        fp.forEach((v, k) => tokenParams.set(k, v));
+      }
+
+      // 1. Detecta erro retornado pelo Supabase após verificação falhar
+      if (searchParams.get('error') || tokenParams.get('error')) {
         if (mounted) setError('Link inválido ou expirado. Solicite um novo link de recuperação.');
         return;
       }
 
-      // 2. Extrai access_token do hash (fluxo implicit após /auth/v1/verify)
-      const access_token = hashParams.get('access_token');
-      const refresh_token = hashParams.get('refresh_token') ?? '';
+      // 2. Estabelece sessão com o access_token (fluxo implicit)
+      const access_token = tokenParams.get('access_token');
+      const refresh_token = tokenParams.get('refresh_token') ?? '';
       if (access_token) {
         const { error: sessionErr } = await supabase.auth.setSession({ access_token, refresh_token });
         if (!sessionErr && mounted) {
@@ -102,23 +115,10 @@ export const ResetPasswordConfirm: React.FC<ResetPasswordConfirmProps> = ({ navi
     }
   }
 
-  const debugInfo = {
-    hashNow: window.location.hash.substring(0, 80) || '(vazio)',
-    searchNow: window.location.search || '(vazio)',
-    hashCapturado: capturedUrl.hash.substring(0, 80) || '(vazio)',
-    searchCapturado: capturedUrl.search || '(vazio)',
-  };
-
   if (!isReady && !error) {
     return (
-      <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 16px', flexDirection: 'column', gap: '16px' }}>
+      <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 16px' }}>
         <p style={{ color: 'var(--fg-muted)' }}>Verificando link…</p>
-        <div style={{ background: '#1a1626', border: '1px solid #4a3f6b', borderRadius: '8px', padding: '12px 16px', fontSize: '11px', fontFamily: 'monospace', color: '#a78bfa', maxWidth: '500px', width: '100%' }}>
-            <div><b>hash (agora):</b> {debugInfo.hashNow}</div>
-            <div><b>search (agora):</b> {debugInfo.searchNow}</div>
-            <div><b>hash (carga):</b> {debugInfo.hashCapturado}</div>
-            <div><b>search (carga):</b> {debugInfo.searchCapturado}</div>
-          </div>
       </main>
     );
   }
@@ -194,15 +194,7 @@ export const ResetPasswordConfirm: React.FC<ResetPasswordConfirmProps> = ({ navi
           </div>
 
           {error && (
-            <>
-              <p style={{ color: '#ef4444', fontSize: '13px', margin: 0 }}>{error}</p>
-              <div style={{ background: '#1a1626', border: '1px solid #4a3f6b', borderRadius: '8px', padding: '10px 14px', fontSize: '11px', fontFamily: 'monospace', color: '#a78bfa' }}>
-                  <div><b>hash (agora):</b> {debugInfo.hashNow}</div>
-                  <div><b>search (agora):</b> {debugInfo.searchNow}</div>
-                  <div><b>hash (carga):</b> {debugInfo.hashCapturado}</div>
-                  <div><b>search (carga):</b> {debugInfo.searchCapturado}</div>
-                </div>
-            </>
+            <p style={{ color: '#ef4444', fontSize: '13px', margin: 0 }}>{error}</p>
           )}
           {message && (
             <p style={{ color: '#10b981', fontSize: '13px', margin: 0 }}>{message}</p>

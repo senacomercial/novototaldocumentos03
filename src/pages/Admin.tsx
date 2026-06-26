@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { checkIsAdmin, fetchAllPedidosAdmin, updatePedidoAdmin, getObraSignedUrl, AdminPedido } from '../lib/admin';
+import { checkIsAdmin, fetchAllPedidosAdmin, updatePedidoAdmin, getObraSignedUrl, uploadCertificado, entregarRegistro, AdminPedido } from '../lib/admin';
 import { Status } from '../types';
 
 interface AdminProps {
@@ -17,6 +17,9 @@ export const Admin: React.FC<AdminProps> = ({ navigate }) => {
   const [error, setError] = useState('');
   const [savingId, setSavingId] = useState<string | null>(null);
   const [selectedPedido, setSelectedPedido] = useState<AdminPedido | null>(null);
+  const [arquivosEntrega, setArquivosEntrega] = useState<File[]>([]);
+  const [entregando, setEntregando] = useState(false);
+  const [entregaMsg, setEntregaMsg] = useState('');
 
   function reload() {
     setLoading(true);
@@ -50,6 +53,33 @@ export const Admin: React.FC<AdminProps> = ({ navigate }) => {
       alert(err instanceof Error ? err.message : 'Erro ao atualizar status.');
     } finally {
       setSavingId(null);
+    }
+  }
+
+  function handleAbrirModal(pedido: AdminPedido) {
+    setSelectedPedido(pedido);
+    setArquivosEntrega([]);
+    setEntregaMsg('');
+  }
+
+  async function handleEntregar() {
+    if (!selectedPedido || arquivosEntrega.length === 0) return;
+    setEntregando(true);
+    setEntregaMsg('');
+    try {
+      const caminhos: string[] = [];
+      for (const file of arquivosEntrega) {
+        const path = await uploadCertificado(selectedPedido.id, file);
+        caminhos.push(path);
+      }
+      await entregarRegistro(selectedPedido.id, caminhos);
+      setEntregaMsg('✅ Documentos entregues e email enviado ao cliente!');
+      reload();
+      setTimeout(() => setSelectedPedido(null), 2500);
+    } catch (err: unknown) {
+      setEntregaMsg(`❌ ${err instanceof Error ? err.message : 'Erro ao entregar.'}`);
+    } finally {
+      setEntregando(false);
     }
   }
 
@@ -120,7 +150,7 @@ export const Admin: React.FC<AdminProps> = ({ navigate }) => {
                   {pedidos.map((p) => (
                     <tr
                       key={p.id}
-                      onClick={() => setSelectedPedido(p)}
+                      onClick={() => handleAbrirModal(p)}
                       style={{
                         borderBottom: '1px solid var(--border)',
                         background: p.status === 'EM_ANALISE' ? 'rgba(168,85,247,0.06)' : 'transparent',
@@ -251,6 +281,60 @@ export const Admin: React.FC<AdminProps> = ({ navigate }) => {
                 </div>
               </div>
             </div>
+
+            {selectedPedido.status !== 'CONCLUIDO' && (
+              <div style={{ borderTop: '1px solid var(--border)', paddingTop: '16px', marginBottom: '16px' }}>
+                <h3 style={{ margin: '0 0 12px', fontSize: '14px', fontWeight: 600 }}>📤 Entregar Documentos de Registro</h3>
+                <p style={{ margin: '0 0 12px', fontSize: '13px', color: 'var(--fg-muted)' }}>
+                  Faça upload de até 3 arquivos. Ao entregar, o pedido será marcado como <strong>Concluído</strong> e o cliente receberá um email com os links para download (válidos por 7 dias).
+                </p>
+
+                <div style={{ marginBottom: '12px' }}>
+                  <input
+                    type="file"
+                    multiple
+                    accept=".pdf,.jpg,.jpeg,.png,.zip,.docx"
+                    onChange={(e) => {
+                      const files = Array.from(e.target.files ?? []).slice(0, 3);
+                      setArquivosEntrega(files);
+                    }}
+                    style={{ fontSize: '13px', color: 'var(--fg)' }}
+                  />
+                  {arquivosEntrega.length > 0 && (
+                    <ul style={{ margin: '8px 0 0', padding: '0 0 0 16px', fontSize: '13px', color: 'var(--fg-muted)' }}>
+                      {arquivosEntrega.map((f, i) => <li key={i}>{f.name}</li>)}
+                    </ul>
+                  )}
+                </div>
+
+                {entregaMsg && (
+                  <p style={{
+                    margin: '0 0 12px',
+                    fontSize: '13px',
+                    color: entregaMsg.startsWith('✅') ? '#10b981' : '#ef4444',
+                  }}>
+                    {entregaMsg}
+                  </p>
+                )}
+
+                <button
+                  className="btn btn-primary"
+                  style={{ height: '40px', width: '100%' }}
+                  disabled={arquivosEntrega.length === 0 || entregando}
+                  onClick={handleEntregar}
+                >
+                  {entregando ? 'Enviando…' : '🚀 Entregar e Notificar Cliente'}
+                </button>
+              </div>
+            )}
+
+            {selectedPedido.status === 'CONCLUIDO' && (
+              <div style={{ borderTop: '1px solid var(--border)', paddingTop: '16px', marginBottom: '16px' }}>
+                <p style={{ margin: 0, fontSize: '13px', color: '#10b981', fontWeight: 600 }}>
+                  ✅ Este pedido já foi entregue.
+                </p>
+              </div>
+            )}
 
             <div style={{ borderTop: '1px solid var(--border)', paddingTop: '16px' }}>
               <h3 style={{ margin: '0 0 12px', fontSize: '14px', fontWeight: 600 }}>📍 Endereço</h3>

@@ -125,3 +125,32 @@ export async function getObraSignedUrl(path: string): Promise<string> {
   if (error) throw error;
   return data.signedUrl;
 }
+
+export async function uploadCertificado(pedidoId: string, file: File): Promise<string> {
+  const ext = file.name.split('.').pop();
+  const path = `certificados/${pedidoId}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+  const { error } = await supabase.storage.from('obras').upload(path, file, { upsert: false });
+  if (error) throw error;
+  return path;
+}
+
+export async function entregarRegistro(pedidoId: string, caminhos: string[]): Promise<void> {
+  const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+  const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token ?? SUPABASE_ANON_KEY;
+
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/entregar-registro`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify({ pedido_id: pedidoId, caminhos }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error((err as { error?: string }).error ?? 'Erro ao entregar registro');
+  }
+}

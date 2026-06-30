@@ -43,11 +43,16 @@ serve(async (req) => {
     const APP_URL = Deno.env.get('APP_URL') ?? 'https://app.registrototalis.com.br';
     const ADMIN_EMAIL = Deno.env.get('ADMIN_EMAIL');
     const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
+    // ADMIN_EMAIL pode conter vários endereços separados por vírgula.
+    const adminEmails = (ADMIN_EMAIL ?? '')
+      .split(',')
+      .map((e) => e.trim())
+      .filter((e) => e.length > 0);
 
     let sucesso = false;
     let erroMsg: string | null = null;
 
-    if (RESEND_API_KEY && ADMIN_EMAIL) {
+    if (RESEND_API_KEY && adminEmails.length > 0) {
       const html = `
         <div style="font-family:sans-serif;max-width:520px;margin:0 auto;">
           <h2>📤 Nova obra enviada para registro</h2>
@@ -63,7 +68,7 @@ serve(async (req) => {
         headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           from: 'Totalis <naoresponda@app.registrototalis.com.br>',
-          to: [ADMIN_EMAIL],
+          to: adminEmails,
           subject: `📤 Nova obra recebida — Protocolo ${pedido.protocolo}`,
           html,
         }),

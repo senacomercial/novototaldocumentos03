@@ -103,6 +103,54 @@ export async function fetchAllPedidosAdmin(): Promise<AdminPedido[]> {
   return ((data as AdminPedidoRow[]) ?? []).map(rowToAdminPedido);
 }
 
+export interface PedidoDetalhe {
+  nomeCompleto: string | null;
+  cpf: string | null;
+  emailAutor: string | null;
+  telefone: string | null;
+  logradouro: string | null;
+  numero: string | null;
+  complemento: string | null;
+  cidade: string | null;
+  estado: string | null;
+  cep: string | null;
+  descricao: string | null;
+}
+
+interface PedidoDetalheRow {
+  nome_completo: string | null;
+  cpf: string | null;
+  email_autor: string | null;
+  telefone: string | null;
+  logradouro: string | null;
+  numero: string | null;
+  complemento: string | null;
+  cidade: string | null;
+  estado: string | null;
+  cep: string | null;
+  descricao: string | null;
+}
+
+export async function fetchPedidoDetalhe(pedidoId: string): Promise<PedidoDetalhe | null> {
+  const { data, error } = await supabase.rpc('admin_detalhe_pedido', { p_pedido_id: pedidoId });
+  if (error) throw error;
+  const row = (data as PedidoDetalheRow[] | null)?.[0];
+  if (!row) return null;
+  return {
+    nomeCompleto: row.nome_completo,
+    cpf: row.cpf,
+    emailAutor: row.email_autor,
+    telefone: row.telefone,
+    logradouro: row.logradouro,
+    numero: row.numero,
+    complemento: row.complemento,
+    cidade: row.cidade,
+    estado: row.estado,
+    cep: row.cep,
+    descricao: row.descricao,
+  };
+}
+
 export async function updatePedidoAdmin(params: {
   pedidoId: string;
   status?: Status;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { checkIsAdmin, fetchAllPedidosAdmin, updatePedidoAdmin, getObraSignedUrl, uploadCertificado, entregarRegistro, AdminPedido } from '../lib/admin';
+import { checkIsAdmin, fetchAllPedidosAdmin, updatePedidoAdmin, getObraSignedUrl, uploadCertificado, entregarRegistro, fetchPedidoDetalhe, AdminPedido } from '../lib/admin';
 import { Status } from '../types';
 
 interface AdminProps {
@@ -60,6 +60,13 @@ export const Admin: React.FC<AdminProps> = ({ navigate }) => {
     setSelectedPedido(pedido);
     setArquivosEntrega([]);
     setEntregaMsg('');
+    // Busca os dados completos do autor/endereço (não vêm na listagem)
+    fetchPedidoDetalhe(pedido.id)
+      .then((det) => {
+        if (!det) return;
+        setSelectedPedido((atual) => (atual && atual.id === pedido.id ? { ...atual, ...det } : atual));
+      })
+      .catch(() => { /* mantém o que já tem */ });
   }
 
   async function handleEntregar() {

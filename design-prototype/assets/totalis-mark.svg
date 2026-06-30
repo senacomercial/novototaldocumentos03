@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 200" fill="none">
+  <defs>
+    <linearGradient id="totalisMarkGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c084fc"></stop>
+      <stop offset="100%" stop-color="#7c3aed"></stop>
+    </linearGradient>
+  </defs>
+  <g transform="translate(15, 15)">
+    <path d="M 10 0 L 10 18 M 10 0 L 60 0 L 60 12 L 130 12 L 130 100 Q 130 140 70 168 Q 10 140 10 100 L 10 30" stroke="url(#totalisMarkGrad)" stroke-width="9" stroke-linecap="square" stroke-linejoin="miter" fill="none"></path>
+    <g stroke="url(#totalisMarkGrad)" stroke-width="9" stroke-linecap="square" fill="none">
+      <line x1="40" y1="38" x2="100" y2="38"></line>
+      <line x1="70" y1="38" x2="70" y2="135"></line>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset=utf-8>
+  <title>Redirecting...</title>
+  <script>
+    var path = encodeURIComponent(window.location.pathname);
+    var hash = window.location.hash ? '&fragment=' + encodeURIComponent(window.location.hash.substring(1)) : '';
+    window.location.replace('/?redirect=' + path + hash);
+  </script>
+</head>
+<body></body>
+</html>

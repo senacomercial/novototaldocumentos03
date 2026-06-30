@@ -171,7 +171,7 @@ serve(async (req) => {
             html: `<!DOCTYPE html><html lang="pt-BR"><body style="margin:0;padding:0;background:#07060b;font-family:Inter,system-ui,sans-serif;color:#f5f3ff;">
 <table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;margin:0 auto;padding:32px 24px;">
   <tr><td>
-    <div style="font-size:22px;font-weight:800;color:#c084fc;margin-bottom:24px;">Totalis</div>
+    <div style="margin-bottom:24px;"><img src="${APP_URL}/logo-totalis-sem-fundo.png" alt="Totalis" width="140" style="display:block;max-width:140px;height:auto;" /></div>
     <div style="background:#14111f;border:1px solid rgba(168,85,247,0.32);border-radius:12px;padding:28px;">
       <div style="font-size:13px;color:#c084fc;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;">Nova compra recebida 💰</div>
       <table style="width:100%;font-size:14px;border-collapse:collapse;">
@@ -224,7 +224,7 @@ function buildEmailBoasVindas(p: {
     <tr><td>
       <!-- Logo -->
       <div style="margin-bottom:32px;">
-        <span style="font-size:22px;font-weight:800;color:#c084fc;letter-spacing:-0.02em;">Totalis</span>
+        <img src="${p.APP_URL}/logo-totalis-sem-fundo.png" alt="Totalis" width="160" style="display:block;max-width:160px;height:auto;" />
       </div>
 
       <!-- Hero -->

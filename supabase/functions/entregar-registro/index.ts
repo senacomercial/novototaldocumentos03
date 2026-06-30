@@ -43,14 +43,14 @@ serve(async (req) => {
       emailCliente = userData?.user?.email ?? '';
     }
 
-    // 2. Gera URLs assinadas (7 dias) para cada arquivo
-    const SETE_DIAS = 7 * 24 * 60 * 60;
+    // 2. Gera URLs assinadas (30 dias) para cada arquivo
+    const TRINTA_DIAS = 30 * 24 * 60 * 60;
     const linksArquivos: { nome: string; url: string }[] = [];
 
     for (const caminho of caminhos.slice(0, 3)) {
       const { data: signed, error: signErr } = await supabase.storage
         .from('obras')
-        .createSignedUrl(caminho, SETE_DIAS);
+        .createSignedUrl(caminho, TRINTA_DIAS);
 
       if (signErr || !signed) continue;
 
@@ -155,16 +155,17 @@ function buildEmailEntrega(p: {
 <body style="margin:0;padding:0;background:#07060b;font-family:Inter,system-ui,sans-serif;color:#f5f3ff;">
   <table width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:0 auto;padding:40px 24px;">
     <tr><td>
-      <div style="font-size:26px;font-weight:800;letter-spacing:-0.5px;margin-bottom:32px;">
-        <span style="color:#c084fc;">T</span>OTALIS
+      <div style="margin-bottom:32px;">
+        <img src="${p.APP_URL}/logo-totalis-sem-fundo.png" alt="Totalis" width="160" style="display:block;max-width:160px;height:auto;" />
       </div>
 
       <div style="background:#14111f;border:1px solid rgba(168,85,247,0.32);border-radius:16px;padding:32px;margin-bottom:24px;">
         <div style="font-size:13px;color:#c084fc;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;">Registro concluído 🎉</div>
         <h2 style="margin:0 0 16px;font-size:22px;font-weight:700;">Seus documentos estão prontos!</h2>
         <p style="margin:0;color:#b8b3c7;font-size:14px;line-height:1.6;">
-          Olá! Seu registro foi processado com sucesso. Abaixo estão os links para download dos seus documentos.
-          Os links são válidos por <strong style="color:#f5f3ff;">7 dias</strong>.
+          Olá! Seu registro foi concluído com sucesso e é <strong style="color:#f5f3ff;">definitivo</strong>.
+          Abaixo estão os links para download dos seus documentos. Os links de download têm validade de
+          <strong style="color:#f5f3ff;">30 dias</strong>, mas o seu registro é permanente.
         </p>
       </div>
 
@@ -182,7 +183,8 @@ function buildEmailEntrega(p: {
           ${linksHtml}
         </table>
         <p style="margin:16px 0 0;font-size:12px;color:#b8b3c7;">
-          ⚠️ Links válidos por 7 dias. Faça o download e guarde os documentos em local seguro.
+          ⚠️ Os links de download têm validade de 30 dias. Faça o download e guarde os documentos em local seguro.
+          Seu registro é definitivo e permanente.
         </p>
       </div>
 

@@ -55,6 +55,7 @@ serve(async (req) => {
     if (RESEND_API_KEY && adminEmails.length > 0) {
       const html = `
         <div style="font-family:sans-serif;max-width:520px;margin:0 auto;">
+          <div style="background:#07060b;padding:16px;border-radius:10px;margin-bottom:16px;text-align:center;"><img src="${APP_URL}/logo-totalis-sem-fundo.png" alt="Totalis" width="140" style="display:inline-block;max-width:140px;height:auto;" /></div>
           <h2>📤 Nova obra enviada para registro</h2>
           <p><strong>Protocolo:</strong> ${pedido.protocolo}</p>
           <p><strong>Categoria:</strong> ${pedido.categoria_name}</p>
